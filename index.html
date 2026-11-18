@@ -1,0 +1,1420 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>สถิติการรับประกันชีวิต จำแนกตามภาคและจังหวัด พ.ศ. 2555–2565</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   ธีม — แก้สีและฟอนต์ได้ที่ตัวแปรชุดนี้ที่เดียว
+   ===================================================================== */
+:root{
+  --bg:#f6f7fb; --surface:#ffffff; --soft:#f1f3f8; --line:#e4e7ef;
+  --ink:#0f172a; --ink2:#475569; --muted:#64748b; --faint:#64748b;
+  --accent:#4f46e5; --accent-ink:#4338ca; --accent-soft:#eef0ff; --accent-line:#c7cbfb;
+  --bar:#c7d2fe;                                       /* แท่งปกติ */
+  --pay:#f59e0b;                                       /* เงินจ่ายตามกรมธรรม์ */
+  --up:#2f7fd1; --down:#e8772e;                        /* เพิ่มขึ้น / ลดลง (แยกได้สำหรับตาบอดสี) */
+  --flag:#d97706;
+  --radius:16px;
+  --shadow:0 1px 2px rgba(15,23,42,.04),0 12px 32px rgba(15,23,42,.07);
+  --font:'IBM Plex Sans Thai','Sarabun','Noto Sans Thai',Tahoma,system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{font-family:var(--font);color:var(--ink);background:var(--bg);overflow:hidden;-webkit-font-smoothing:antialiased;font-size:14px;line-height:1.55}
+button,select,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums}
+.sr{position:absolute;left:-9999px}
+
+/* ---------- สถานะเริ่มต้น / ผิดพลาด ---------- */
+.bar-r{display:flex;align-items:center;gap:10px;pointer-events:auto}
+.login{position:fixed;inset:0;z-index:90;display:grid;place-items:center;padding:20px;background:radial-gradient(900px 500px at 15% 10%,#e9ebff 0,transparent 60%),radial-gradient(800px 500px at 90% 90%,#e3f1ff 0,transparent 60%),var(--bg)}
+.login[hidden]{display:none}
+.lg-card{width:min(400px,100%);background:#fff;border:1px solid var(--line);border-radius:20px;padding:30px 28px 22px;box-shadow:0 24px 60px rgba(30,41,90,.14);display:grid;gap:6px}
+.lg-card.shake{animation:shk .35s}
+@keyframes shk{20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+.lg-logo{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,#6366f1,#4338ca);display:grid;place-items:center;margin-bottom:6px;box-shadow:0 8px 20px rgba(79,70,229,.3)}
+.lg-logo svg{width:24px;height:24px}
+.lg-card h2{margin:0;font-size:22px}
+.lg-sub{margin:0 0 12px;font-size:13px;color:var(--muted)}
+.lg-card label{font-size:13px;color:var(--ink2);font-weight:500;margin-top:6px}
+.lg-card input{width:100%;border:1px solid #cbd5e1;border-radius:11px;padding:11px 13px;font-size:15px;background:#fff;color:var(--ink);outline:none;transition:border .15s,box-shadow .15s}
+.lg-card input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,70,229,.15)}
+.lg-card input.bad{border-color:#d9480f}
+.lg-pw{position:relative}.lg-pw input{padding-right:64px}
+.lg-pw button{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:0;background:none;color:var(--accent-ink);font-size:13px;padding:6px 8px;border-radius:8px}
+.lg-pw button:hover{background:var(--accent-soft)}
+.lg-err{margin:2px 0 0;min-height:20px;font-size:13px;color:#b4380a}
+.lg-go{width:100%;justify-content:center;margin-top:4px;padding:12px}
+.lg-foot{margin:10px 0 0;font-size:12px;color:var(--muted);text-align:center}
+@media (max-width:700px){.logout{padding:7px 10px}}
+.boot{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:var(--bg);transition:opacity .35s}
+.boot.done{opacity:0;pointer-events:none}
+.boot-box{display:flex;align-items:center;gap:12px;color:var(--ink2)}
+.spin{width:22px;height:22px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--accent);animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.err{max-width:460px;background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px 24px}
+.err h2{margin:0 0 6px;font-size:17px}.err p{margin:0 0 12px;color:var(--ink2)}
+
+/* ---------- แถบบน ---------- */
+.bar{position:fixed;inset:0 0 auto 0;height:68px;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:0 28px;pointer-events:none}
+.bar>*{pointer-events:auto}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:36px;height:36px;border-radius:11px;background:linear-gradient(135deg,#6366f1,#4338ca);display:grid;place-items:center;flex:none;box-shadow:0 4px 12px rgba(79,70,229,.25)}
+.logo svg{width:18px;height:18px}
+.brand h1{margin:0;font-size:16px;font-weight:600;line-height:1.3}
+.brand p{margin:0;font-size:12px;color:var(--muted)}
+.src-chip{font-size:12px;color:var(--muted);background:rgba(255,255,255,.8);border:1px solid var(--line);border-radius:999px;padding:5px 12px}
+
+/* ---------- เวทีแผนที่ ---------- */
+.stage{position:fixed;inset:0;background:radial-gradient(1000px 760px at 40% 50%,#ffffff 0%,#f4f6fb 58%,#e9edf5 100%)}
+#map{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+#map.hov{cursor:pointer}#map.drag{cursor:grabbing}
+
+.pillbar{position:fixed;top:80px;left:28px;z-index:4;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.pvsel{display:inline-flex;align-items:center;gap:6px;background:#fff;color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:0 4px 0 12px;height:36px;font-weight:500;font-size:13.5px;box-shadow:0 1px 2px rgba(15,23,42,.04);white-space:nowrap}
+.pvsel select{height:28px;border:0;border-radius:8px;background:var(--soft);color:var(--ink);font:inherit;font-size:13.5px;padding:0 6px;width:128px;cursor:pointer}
+.pvsel:focus-within{outline:2px solid var(--accent-ink);outline-offset:2px}
+.seg{display:inline-flex;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:3px;gap:2px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+.seg button{border:0;background:none;border-radius:9px;padding:6px 13px;font-size:13px;color:var(--ink2);white-space:nowrap;transition:background .2s,color .2s}
+.seg button:hover{color:var(--ink);background:var(--soft)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:#fff;box-shadow:0 2px 6px rgba(79,70,229,.28)}
+.seg.sm button{padding:4px 10px;font-size:12px}
+.seg button:disabled{opacity:.4;cursor:not-allowed}
+.ystep{display:inline-flex;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:3px;gap:2px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+.ystep button{border:0;background:none;width:30px;height:30px;border-radius:9px;color:var(--ink2);font-size:16px;line-height:1}
+.ystep button:hover:not(:disabled){background:var(--soft);color:var(--accent)}
+.ystep button:disabled{opacity:.3;cursor:default}
+.ystep select{border:0;height:30px;background:transparent;padding:0 6px;font-size:13px;font-weight:500;cursor:pointer;appearance:none;text-align:center}
+
+.side{position:fixed;right:24px;top:80px;bottom:24px;width:340px;z-index:4;display:flex;flex-direction:column;background:var(--surface);border-radius:20px;box-shadow:var(--shadow);overflow:hidden;transition:opacity .35s}
+.side-top{padding:20px 22px 16px;border-bottom:1px solid var(--line)}
+.eyebrow{margin:0;font-size:12px;color:var(--muted)}
+.hero{font-size:32px;font-weight:600;line-height:1.2;letter-spacing:-.01em;margin-top:4px}
+.hero small{font-size:14px;font-weight:400;color:var(--muted);margin-left:6px}
+.delta{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;font-weight:500;padding:2px 9px;border-radius:999px;margin-top:6px}
+.delta.up{background:#e8f1fb;color:#1f62a8}.delta.down{background:#fdf0e6;color:#a8530f}.delta.flat{background:var(--soft);color:var(--ink2)}
+.spark{margin-top:12px}
+.side-list{flex:1;overflow-y:auto;padding:12px 14px;scrollbar-width:thin}
+.side-list h3{margin:4px 8px 8px;font-size:13px;font-weight:600;color:var(--ink2)}
+.rank{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.rank button{width:100%;display:grid;grid-template-columns:22px 1fr auto;gap:3px 10px;align-items:center;border:0;background:none;text-align:left;padding:9px 8px;border-radius:10px;transition:background .15s}
+.rank button:hover,.rank button.hl{background:var(--soft)}
+.rank .no{font-size:12px;color:var(--faint);text-align:center}
+.rank .nm{font-weight:500;display:flex;align-items:center;gap:8px}
+.rank .nm i{width:9px;height:9px;border-radius:50%;flex:none;background:#cbd5e1;transition:background .2s}
+.rank button:hover .nm i,.rank button.hl .nm i{background:var(--c)}
+.rank .vv{font-size:12.5px;color:var(--ink2);text-align:right}
+.rank .track{grid-column:2/4;height:5px;border-radius:999px;background:var(--soft);overflow:hidden}
+.rank .track span{display:block;height:100%;border-radius:999px;background:#cbd5e1;transition:background .2s,width .35s}
+.rank button:hover .track span,.rank button.hl .track span{background:var(--c)}
+.side-foot{padding:14px 22px 18px;border-top:1px solid var(--line)}
+.btn-primary{width:100%;border:0;border-radius:12px;background:var(--accent);color:#fff;padding:11px 14px;font-weight:500;display:flex;justify-content:center;align-items:center;gap:8px;transition:background .2s,box-shadow .2s;box-shadow:0 4px 14px rgba(79,70,229,.25)}
+.btn-primary:hover{background:var(--accent-ink)}
+.hint{margin:10px 0 0;font-size:12px;color:var(--muted);text-align:center}
+.maptools{position:fixed;left:28px;bottom:24px;z-index:4;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.btn-ghost{border:1px solid var(--line);background:rgba(255,255,255,.95);border-radius:10px;padding:7px 13px;font-size:13px;color:var(--ink2);display:inline-flex;align-items:center;gap:6px;transition:color .2s,border-color .2s,background .2s}
+.btn-ghost:hover{color:var(--accent);border-color:var(--accent-line);background:#fff}
+.btn-ghost svg{width:14px;height:14px}
+.legend-note{font-size:12px;color:var(--muted);background:rgba(255,255,255,.88);border-radius:10px;padding:6px 12px;border:1px solid var(--line)}
+
+/* ---------- tooltip / toast ---------- */
+.tip{position:fixed;z-index:60;pointer-events:none;opacity:0;transform:translateY(4px);background:#0f172a;color:#fff;border-radius:10px;padding:9px 12px;font-size:12.5px;line-height:1.55;box-shadow:0 10px 28px rgba(15,23,42,.28);transition:opacity .12s,transform .12s;max-width:320px}
+.tip.on{opacity:1;transform:none}
+.tip b{display:block;font-weight:600;font-size:13px;margin-bottom:2px}
+.tip span{display:block;color:#cbd5e1}
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);z-index:70;background:#0f172a;color:#fff;padding:9px 16px;border-radius:999px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .25s}
+.toast.on{opacity:1}
+
+/* ---------- หน้าแดชบอร์ด ---------- */
+.sheet{position:fixed;inset:0;z-index:10;background:var(--bg);display:flex;flex-direction:column;transform:translateY(102%);visibility:hidden;transition:transform .55s cubic-bezier(.2,.8,.2,1),visibility 0s .55s}
+body.open .sheet{transform:none;visibility:visible;transition:transform .55s cubic-bezier(.2,.8,.2,1)}
+body.open .side,body.open .pillbar,body.open .maptools{opacity:0;pointer-events:none}
+.sh-head{flex:none;background:rgba(255,255,255,.96);border-bottom:1px solid var(--line);backdrop-filter:blur(8px)}
+.sh-in{max-width:1280px;margin:0 auto;padding:14px 28px}
+.sh-row{display:flex;align-items:center;gap:12px 14px;flex-wrap:wrap}
+@media(min-width:1300px){.sh-row{flex-wrap:nowrap}.sh-row .tabs{flex-wrap:nowrap}.flt{flex-wrap:nowrap}}
+.sh-row+.sh-row{margin-top:12px}
+.mini{width:46px;height:70px;flex:none}
+.mini path{stroke:#fff;stroke-width:.6;cursor:pointer;transition:fill .2s}
+.mini path:hover{opacity:.8}
+.titles{flex:1;min-width:220px}
+.crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:4px;font-size:12.5px;color:var(--muted)}
+.crumbs button{border:0;background:none;padding:0;color:var(--accent);font-size:12.5px}
+.crumbs button:hover{text-decoration:underline}
+.crumbs .sepr{opacity:.5}
+.titles h2{margin:2px 0 0;font-size:24px;font-weight:600;line-height:1.3;letter-spacing:-.01em;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.chipx{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;background:var(--accent-soft);color:var(--accent-ink);border:0;border-radius:999px;padding:4px 10px}
+.chipx:hover{background:#e0e3ff}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.exp{position:relative}
+.menu{position:absolute;right:0;top:calc(100% + 6px);z-index:30;min-width:250px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:6px;box-shadow:0 12px 32px rgba(15,23,42,.14);display:grid;gap:2px}
+.menu[hidden]{display:none}
+.menu button{border:0;background:none;text-align:left;padding:9px 12px;border-radius:8px;display:grid;gap:1px;font-size:13.5px;color:var(--ink)}
+.menu button span{font-size:12px;color:var(--muted)}
+.menu button:hover{background:var(--soft)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{border:1px solid var(--line);background:#fff;border-radius:10px;padding:6px 12px;font-size:13px;color:var(--ink2);display:inline-flex;align-items:center;gap:7px;transition:all .15s}
+.tab i{width:8px;height:8px;border-radius:50%}
+.tab:hover{border-color:var(--accent-line);color:var(--ink)}
+.tab[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.flt{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-left:auto}
+.sh-body{flex:1;overflow-y:auto;scrollbar-width:thin}
+.dash{max-width:1280px;margin:0 auto;padding:22px 28px 56px;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:16px}
+.s12{grid-column:span 12}.s7{grid-column:span 7}.s5{grid-column:span 5}
+
+.summary{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:var(--radius);padding:14px 18px}
+.summary h3{margin:0 0 6px;font-size:13px;font-weight:600;color:var(--ink2)}
+.summary ul{margin:0;padding-left:18px;display:grid;gap:3px}
+.summary li::marker{color:var(--accent)}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;min-width:0}
+.kpi .k{font-size:12.5px;color:var(--ink2)}
+.kpi .v{font-size:27px;font-weight:600;line-height:1.25;margin-top:4px;letter-spacing:-.01em;overflow-wrap:anywhere}
+.kpi .v small{font-size:13px;font-weight:400;color:var(--muted);margin-left:4px;letter-spacing:0}
+.kpi .v.txt{font-size:19px;line-height:1.4}
+.kpi .s{font-size:12px;color:var(--muted);margin-top:4px}
+.kpi .s b{font-weight:500}
+.up-t{color:#1f62a8}.down-t{color:#b45309}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;min-width:0}
+.card h3{margin:0;font-size:15px;font-weight:600;display:flex;justify-content:space-between;align-items:center;gap:8px 10px;flex-wrap:wrap}
+.card .cap{margin:2px 0 14px;font-size:12px;color:var(--muted)}
+.lg{display:inline-flex;gap:4px 12px;font-size:12px;font-weight:400;color:var(--ink2);flex-wrap:wrap;justify-content:flex-end}
+.lg>span{white-space:nowrap;display:inline-flex;align-items:center}
+.lg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px}
+.lg i.dl{height:0;border-top:2px dashed var(--faint);border-radius:0;width:14px}
+.link{border:0;background:none;color:var(--accent);font-size:12.5px;padding:0}
+.link:hover{text-decoration:underline}
+svg text{font-family:var(--font)}
+.hit{fill:transparent;cursor:pointer}.hit:hover{fill:rgba(79,70,229,.05)}
+
+[hidden]{display:none!important}
+.pvgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px}
+.pvgrid h4{margin:0;font-size:13.5px;font-weight:600;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.tvbar{display:inline-flex;gap:10px;align-items:center;flex-wrap:wrap}
+@media (max-width:900px){.pvgrid{grid-template-columns:1fr}}
+.avgline{position:absolute;top:-3px;bottom:-3px;width:0;border-left:2px dashed #0f172a;opacity:.55}
+.avgsw{display:inline-block;width:0!important;height:12px!important;border-left:2px dashed #0f172a;background:none!important;border-radius:0!important}
+.hmt{border-collapse:separate;border-spacing:2px;width:100%;table-layout:fixed;font-size:12px}
+.hmt th{font-weight:500;color:#64748b;font-size:12px;padding:0 0 4px;text-align:center;position:sticky;top:0;background:var(--surface)}
+.hmt th.cur{color:#4338ca;font-weight:700}
+.hmt td{height:18px;border-radius:3px;padding:0}
+.hmt td.nm{text-align:right;padding-right:8px;color:#475569;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:none}
+.hmt tr{cursor:pointer}.hmt tr.on td.nm{color:#4338ca;font-weight:600}
+.drawer{position:fixed;top:150px;right:0;bottom:0;width:min(460px,100vw);background:var(--surface);border-left:1px solid var(--line);box-shadow:-18px 0 44px rgba(15,23,42,.12);border-top:1px solid var(--line);border-radius:16px 0 0 0;z-index:60;display:flex;flex-direction:column;transform:translateX(105%);transition:transform .28s cubic-bezier(.2,.8,.2,1);visibility:hidden}
+.drawer.on{transform:none;visibility:visible}
+.dr-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:20px 22px 12px}
+.dr-head h2{margin:0;font-size:18px}.dr-head p{margin:2px 0 0;font-size:13px;color:var(--muted)}
+.dr-x{border:1px solid var(--line);background:#fff;border-radius:10px;width:34px;height:34px;color:var(--ink2);font-size:14px}
+.dr-x:hover{color:var(--accent);border-color:var(--accent-line)}
+.dr-tabs{display:flex;gap:4px;padding:0 18px;border-bottom:1px solid var(--line)}
+.dr-tabs button{border:0;background:none;padding:10px 12px;font-size:13.5px;color:var(--ink2);border-bottom:2px solid transparent;margin-bottom:-1px}
+.dr-tabs button[aria-selected="true"]{color:var(--accent-ink);border-bottom-color:var(--accent);font-weight:600}
+.dr-body{flex:1;overflow-y:auto;padding:18px 22px 28px;display:grid;gap:14px;align-content:start;font-size:13.5px;color:var(--ink2);line-height:1.65}
+.dr-body h4{margin:4px 0 0;font-size:13.5px;color:var(--ink)}
+.dr-body .sub{margin:-8px 0 0;font-size:12.5px;color:var(--muted)}
+.ins{display:grid;gap:10px;margin:0;padding:0;list-style:none}
+.ins li{display:grid;grid-template-columns:26px 1fr;gap:10px;background:var(--soft);border-radius:12px;padding:11px 13px}
+.ins li i{font-style:normal;width:24px;height:24px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-weight:700;font-size:12.5px;display:grid;place-items:center}
+.ins li b{color:var(--ink)}
+.qk{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.qk div{background:var(--soft);border-radius:12px;padding:10px 13px}
+.qk span{font-size:12.5px;color:var(--muted);display:block}.qk b{font-size:19px;color:var(--ink)}.qk b.warn{color:#b45309}
+.note{background:#fff8eb;border:1px solid #f6dfb4;border-radius:12px;padding:11px 13px;color:#7c4a03;font-size:13px}
+.note ul{margin:6px 0 0;padding-left:18px;display:grid;gap:4px}
+.iss{border:1px solid var(--line);border-radius:12px;padding:10px 13px;display:grid;gap:3px}
+.iss .t{display:flex;justify-content:space-between;gap:8px;color:var(--ink);font-weight:600;font-size:13.5px}
+.iss .t em{font-style:normal;font-weight:600;background:var(--accent-soft);color:var(--accent-ink);border-radius:999px;padding:0 9px;font-size:12px;white-space:nowrap}
+.iss .m{font-size:12.5px;color:var(--muted)}
+.mt{display:grid;gap:8px}.mt div{background:var(--soft);border-radius:12px;padding:10px 13px;display:grid;gap:2px}.mt code,.fd code{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;color:var(--accent-ink);font-weight:600}.mt b{color:var(--ink)}.mt span{font-size:12.5px;color:var(--muted)}
+.fd{border:1px solid var(--line);border-radius:12px;padding:11px 13px;display:grid;gap:5px}
+.fd .t{display:flex;justify-content:space-between;gap:8px;align-items:center}.fd .t em{font-style:normal;font-size:12px;background:var(--accent-soft);color:var(--accent-ink);border-radius:999px;padding:0 9px}
+.fd dl{margin:2px 0 0;display:grid;grid-template-columns:96px 1fr;gap:3px 10px;font-size:12.5px}.fd dt{color:var(--muted)}.fd dd{margin:0;color:var(--ink2);overflow-wrap:anywhere}
+.stp{list-style:none;margin:0;padding:0;display:grid;gap:8px}.stp li{display:grid;grid-template-columns:26px 1fr;gap:10px;background:var(--soft);border-radius:12px;padding:10px 12px}
+.stp li i{font-style:normal;width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;font-size:12.5px;display:grid;place-items:center}
+.stp li div{display:grid;gap:2px}.stp b{color:var(--ink)}.stp span{font-size:12.5px}.stp .m{color:var(--muted)}.stp .ok{color:#166534}
+.dd{width:100%;border-collapse:collapse;font-size:12.5px;table-layout:fixed}
+.dd th,.dd td{text-align:left!important;overflow-wrap:anywhere;white-space:normal!important;position:static}
+.dd th:nth-child(1){width:25%}.dd th:nth-child(3){width:21%}.dd th:nth-child(4){width:20%}
+.dd th{text-align:left;font-weight:600;color:var(--ink);padding:7px 8px;border-bottom:1px solid var(--line);background:var(--soft)}
+.dd td{padding:8px;border-bottom:1px solid var(--line);vertical-align:top}.dd td:first-child{color:var(--ink);font-weight:600;white-space:nowrap}
+.fx{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;background:var(--soft);border-radius:8px;padding:7px 10px;color:var(--ink)}
+#aboutBtn[aria-pressed="true"]{color:var(--accent-ink);border-color:var(--accent);background:var(--accent-soft)}
+.hbars{display:grid;gap:2px}
+.hb{display:grid;grid-template-columns:24px minmax(84px,132px) 1fr auto;align-items:center;gap:10px;border:0;background:none;text-align:left;padding:5px 6px;border-radius:8px;width:100%;transition:background .15s,opacity .2s}
+.hb:hover{background:var(--soft)}
+.hb .no{font-size:12px;color:var(--faint);text-align:right}
+.hb .nm{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:7px}
+.hb .nm i{width:8px;height:8px;border-radius:50%;flex:none}
+.hb .tr{height:12px;background:var(--soft);border-radius:4px;overflow:hidden}
+.hb .tr span{display:block;height:100%;border-radius:4px;background:var(--bar);transition:width .35s}
+.hb .vv{font-size:12.5px;font-weight:500;min-width:96px;text-align:right}
+.hb.on{background:var(--accent-soft)}
+.hb.on .nm{font-weight:600;color:var(--accent-ink)}
+.hb.on .tr span{background:var(--accent)}
+.brk{position:absolute;right:10%;top:50%;transform:translateY(-50%);font-size:13px;line-height:1;color:var(--ink2);background:#fff;padding:0 2px;font-weight:600}
+.hbars.has-on .hb:not(.on){opacity:.55}
+.scroll{max-height:400px;overflow-y:auto;scrollbar-width:thin;padding-right:4px}
+
+.search{height:34px;border:1px solid var(--line);border-radius:10px;padding:0 12px 0 32px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 16 16'%3E%3Ccircle cx='7' cy='7' r='5' fill='none' stroke='%2394a3b8' stroke-width='1.6'/%3E%3Cpath d='M11 11l3.5 3.5' stroke='%2394a3b8' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat 11px center;width:220px;font-size:13px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{position:sticky;top:0;background:#fff;z-index:1;text-align:right;font-weight:500;color:var(--ink2);padding:9px 10px;border-bottom:1px solid var(--line);white-space:nowrap;cursor:pointer;user-select:none}
+th:hover{color:var(--ink)}
+th.l,td.l{text-align:left}
+td{text-align:right;padding:9px 10px;border-bottom:1px solid #eef1f6;font-variant-numeric:tabular-nums;white-space:nowrap}
+tbody tr{cursor:pointer}
+tbody tr:hover td{background:#f8f9fd}
+tr.on td{background:var(--accent-soft);font-weight:500}
+td .up{color:var(--up)}td .down{color:var(--down)}
+.fl{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--flag);margin-left:6px;vertical-align:1px}
+.empty{padding:26px 10px;text-align:center;color:var(--muted);font-size:13px}
+.empty button{margin-top:8px}
+
+.qgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.qi{background:var(--soft);border-radius:10px;padding:10px 12px}
+.qi .k{font-size:12px;color:var(--ink2)}
+.qi .v{font-size:18px;font-weight:600}
+.qi .v.ok{color:#15803d}.qi .v.warn{color:#b45309}
+details.log{margin-top:10px;font-size:12.5px;color:var(--ink2)}
+details.log summary{cursor:pointer;color:var(--accent)}
+details.log ul{margin:6px 0 0;padding-left:18px;max-height:200px;overflow:auto;display:grid;gap:4px}
+.notes{margin:12px 0 0;padding:10px 12px;border-radius:10px;background:#fff8eb;border:1px solid #fde4b5;font-size:12.5px;color:#7c4a03}
+.notes ul{margin:4px 0 0;padding-left:18px}
+.foot{font-size:12px;color:var(--muted);line-height:1.7}
+
+@media (max-width:1100px){.s7,.s5{grid-column:span 12}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:860px){
+  .brand p,.src-chip{display:none}
+  .bar{padding:0 14px}
+  .side{top:auto;left:12px;right:12px;bottom:12px;width:auto;max-height:44vh}
+  .pillbar{left:12px;right:12px;top:70px}
+  .maptools,.spark{display:none}
+  .sh-in{padding:12px 16px}.dash{padding:16px 16px 40px;gap:12px}
+  .flt{margin-left:0}.mini{display:none}
+  .hb{grid-template-columns:22px 92px 1fr auto}.hb .vv{min-width:72px}
+  .search{width:100%}
+  .kpi .v{font-size:22px}
+}
+@media (max-width:560px){.kpis{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){*{transition-duration:.01ms!important;animation-duration:.01ms!important}}
+@media print{
+  @page{size:A4 landscape;margin:10mm}
+  html,body{height:auto!important;overflow:visible!important;background:#fff!important}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .stage,.bar,.side,.pillbar,.maptools,.tip,.toast,.boot,.login,.logout,.actions,.drawer,.search,.mini,#backBtn,.link,.seg.sm{display:none!important}
+  .sheet{position:static!important;transform:none!important;visibility:visible!important;display:block!important}
+  .sh-body{overflow:visible!important}.scroll{max-height:none!important;overflow:visible!important}
+  .card,.kpi,.summary{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+
+<div class="login" id="login" role="dialog" aria-modal="true" aria-labelledby="lgT" hidden>
+  <div class="lg-card" id="lgForm">
+    <div class="lg-logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg></div>
+    <h2 id="lgT">เข้าสู่ระบบ</h2>
+    <p class="lg-sub">สถิติการรับประกันชีวิต จำแนกตามภาคและจังหวัด พ.ศ. 2555–2565</p>
+    <label for="lgU">ชื่อผู้ใช้</label>
+    <input id="lgU" name="u" type="text" autocomplete="username" autocapitalize="off" spellcheck="false" placeholder="ชื่อผู้ใช้">
+    <label for="lgP">รหัสผ่าน</label>
+    <div class="lg-pw"><input id="lgP" name="p" type="password" autocomplete="current-password" placeholder="รหัสผ่าน"><button type="button" id="lgEye" aria-label="แสดงรหัสผ่าน" aria-pressed="false">แสดง</button></div>
+    <p class="lg-err" id="lgErr" role="alert" aria-live="assertive"></p>
+    <button class="btn-primary lg-go" id="lgGo" type="button">เข้าสู่ระบบ</button>
+    <p class="lg-foot">ที่มา: คปภ. · ใช้เพื่อการศึกษาและแข่งขันทักษะการวิเคราะห์ข้อมูล</p>
+  </div>
+</div>
+
+<div class="boot" id="boot" role="status" aria-live="polite">
+  <div class="boot-box" id="bootBox"><div class="spin"></div><span>กำลังเตรียมข้อมูล…</span></div>
+</div>
+
+<header class="bar">
+  <div class="brand">
+    <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg></div>
+    <div><h1 id="brandT">—</h1><p id="brandS">—</p></div>
+  </div>
+  <span class="bar-r"><span class="src-chip" id="srcChip">—</span><button class="btn-ghost logout" type="button" data-logout><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2.5H3.5v11H6M10 5l3 3-3 3M13 8H6.5"/></svg>ออกจากระบบ</button></span>
+</header>
+
+<main class="stage">
+  <canvas id="map" role="img" aria-label="แผนที่ 3 มิติของประเทศไทย แบ่งเป็นกรุงเทพมหานครและ 4 ภาค ความสูงแทนค่าของตัวชี้วัด คลิกภาคเพื่อเปิดแดชบอร์ด หรือเลือกจากรายการด้านขวา"></canvas>
+
+  <div class="pillbar" aria-label="ตัวเลือกแผนที่">
+    <div class="seg" id="mSeg" role="group" aria-label="ตัวชี้วัด"></div>
+    <div class="ystep" data-ystep><button type="button" data-step="-1" aria-label="ปีก่อนหน้า">‹</button><select aria-label="ปี พ.ศ."></select><button type="button" data-step="1" aria-label="ปีถัดไป">›</button></div>
+  </div>
+
+  <aside class="side" aria-label="ภาพรวมทั้งประเทศ">
+    <div class="side-top">
+      <p class="eyebrow" id="sideEyebrow">—</p>
+      <div class="hero num" id="sideHero">—</div>
+      <span class="delta flat" id="sideDelta">—</span>
+      <div class="spark" id="spark"></div>
+    </div>
+    <div class="side-list">
+      <h3>เลือกพื้นที่เพื่อดูรายละเอียด</h3>
+      <ol class="rank" id="rankList"></ol>
+    </div>
+    <div class="side-foot">
+      <button class="btn-primary" id="openAll" type="button">ดูแดชบอร์ดทั้งประเทศ <span aria-hidden="true">→</span></button>
+      <p class="hint">ชี้หรือคลิกภาคบนแผนที่ · ลากเพื่อหมุน · เลื่อนล้อเมาส์เพื่อซูม</p>
+    </div>
+  </aside>
+
+  <div class="maptools">
+    <button class="btn-ghost" id="resetView" type="button"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2.5 8a5.5 5.5 0 1 0 1.6-3.9M2.5 2.5v2.8h2.8"/></svg>รีเซ็ตมุมมอง</button>
+    <span class="legend-note">ความสูงของแต่ละพื้นที่ = ค่าของตัวชี้วัดที่เลือก</span>
+  </div>
+</main>
+
+<section class="sheet" id="sheet" aria-label="แดชบอร์ดรายละเอียด" aria-hidden="true">
+  <div class="sh-head">
+    <div class="sh-in">
+      <div class="sh-row">
+        <button class="btn-ghost" id="backBtn" type="button"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3L5 8l5 5"/></svg>กลับแผนที่</button>
+        <svg class="mini" id="mini" viewBox="0 0 46 70" role="img" aria-label="แผนที่ย่อ คลิกเพื่อสลับภาค"></svg>
+        <div class="titles">
+          <nav class="crumbs" id="crumbs" aria-label="ตำแหน่งปัจจุบัน"></nav>
+          <h2 id="scopeTitle">—</h2>
+        </div>
+        <div class="actions exp">
+          <button class="btn-ghost logout" type="button" data-logout><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2.5H3.5v11H6M10 5l3 3-3 3M13 8H6.5"/></svg>ออกจากระบบ</button>
+          <button class="btn-ghost" id="aboutBtn" type="button" aria-pressed="false" aria-controls="about"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6"/><path d="M8 7.2V11M8 5.1v.1"/></svg>เกี่ยวกับข้อมูล</button>
+          <button class="btn-ghost" id="expBtn" type="button" aria-haspopup="menu" aria-expanded="false"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v8M5 7l3 3 3-3M3 13h10"/></svg>ส่งออก<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:11px;height:11px"><path d="M4 6l4 4 4-4"/></svg></button>
+          <div class="menu" id="expMenu" role="menu" hidden>
+            <button type="button" role="menuitem" data-exp="csv"><b>CSV</b><span>ไฟล์ข้อความ เปิดได้ทุกโปรแกรม</span></button>
+            <button type="button" role="menuitem" data-exp="xlsx"><b>Excel (.xlsx)</b><span>ตารางพร้อมหัวคอลัมน์</span></button>
+            <button type="button" role="menuitem" data-exp="pdf"><b>PDF</b><span>พิมพ์หน้าแดชบอร์ดเป็น PDF</span></button>
+          </div>
+        </div>
+      </div>
+      <div class="sh-row">
+        <div class="tabs" id="tabs" role="group" aria-label="เลือกพื้นที่"></div>
+        <label class="pvsel"><span>ดูรายจังหวัด</span><select id="pvSel" aria-label="เลือกจังหวัดเพื่อดูแดชบอร์ดรายจังหวัด"></select></label>
+        <div class="flt">
+          <div class="ystep" data-ystep><button type="button" data-step="-1" aria-label="ปีก่อนหน้า">‹</button><select aria-label="ปี พ.ศ."></select><button type="button" data-step="1" aria-label="ปีถัดไป">›</button></div>
+          <div class="seg" id="mSeg2" role="group" aria-label="ตัวชี้วัด"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sh-body" id="shBody">
+    <div class="dash">
+
+      <div class="kpis s12">
+        <div class="kpi"><div class="k" id="k1l">—</div><div class="v num" id="k1v">—</div><div class="s" id="k1s"></div></div>
+        <div class="kpi"><div class="k" id="k2l">—</div><div class="v num" id="k2v">—</div><div class="s" id="k2s"></div></div>
+        <div class="kpi"><div class="k">เบี้ยประกันภัยเฉลี่ยต่อกรมธรรม์</div><div class="v num" id="k3v">—</div><div class="s" id="k3s"></div></div>
+        <div class="kpi"><div class="k">เงินที่จ่ายตามกรมธรรม์ ÷ เบี้ยประกันภัยรับ</div><div class="v num" id="k4v">—</div><div class="s" id="k4s"></div></div>
+      </div>
+
+      <section class="card s7">
+        <h3><span id="trTitle">แนวโน้ม</span> <span class="lg" id="trLegend"></span></h3>
+        <p class="cap" id="trCap"></p>
+        <div id="trend"></div>
+      </section>
+
+      <section class="card s5">
+        <h3><span id="pbTitle">อันดับจังหวัด</span> <button class="link" id="pbMore" type="button"></button></h3>
+        <p class="cap" id="pbCap"></p>
+        <div class="scroll"><div class="hbars" id="provBars"></div></div>
+      </section>
+
+      <section class="card s7">
+        <h3>เบี้ยประกันภัยรับ เทียบ เงินที่จ่ายตามกรมธรรม์ <span class="lg"><span><i style="background:var(--accent)"></i>เบี้ยประกันภัยรับ</span><span><i style="background:var(--pay)"></i>เงินที่จ่ายตามกรมธรรม์</span></span></h3>
+        <p class="cap" id="ppCap"></p>
+        <div id="pp"></div>
+      </section>
+
+      <section class="card s5">
+        <h3>เทียบทุกพื้นที่ <span class="seg sm" id="cmpMode" role="group" aria-label="รูปแบบการเทียบ"></span></h3>
+        <p class="cap" id="cmpCap"></p>
+        <div class="hbars" id="cmp"></div>
+      </section>
+
+      <section class="card s7">
+        <h3><span id="grTitle">การเปลี่ยนแปลงรายจังหวัด</span> <span class="seg sm" id="grMode" role="group" aria-label="ปีฐานในการเทียบ"></span></h3>
+        <p class="cap" id="grCap"></p>
+        <div id="growth"></div>
+      </section>
+
+      <section class="card s5">
+        <h3>สัดส่วนรายภาคตามปี</h3>
+        <p class="cap" id="shCap"></p>
+        <div id="share"></div>
+      </section>
+
+      <section class="card s7">
+        <h3>เบี้ยประกันภัยเฉลี่ยต่อกรมธรรม์ <span class="lg" id="avLegend"></span></h3>
+        <p class="cap" id="avCap"></p>
+        <div id="avg"></div>
+      </section>
+
+      <section class="card s5">
+        <h3>เงินจ่ายตามกรมธรรม์ ÷ เบี้ยรับ <span class="lg" id="prLegend"></span></h3>
+        <p class="cap" id="prCap"></p>
+        <div id="prt"></div>
+      </section>
+
+      <section class="card s12">
+        <h3><span id="tbTitle">ข้อมูลรายจังหวัด</span>
+          <span class="tvbar"><span class="seg sm" id="tvMode" role="group" aria-label="รูปแบบการแสดงผล"></span><span id="qWrap"><label for="q" class="sr">ค้นหาจังหวัด</label><input class="search" id="q" type="search" placeholder="ค้นหาจังหวัด…"></span></span>
+        </h3>
+        <p class="cap" id="tbCap"></p>
+        <div id="pvDash" class="pvgrid">
+          <div><h4>เบี้ยเฉลี่ยต่อกรมธรรม์ รายจังหวัด <span class="lg" id="scLegend"></span></h4><p class="cap" id="scCap"></p><div id="sc"></div></div>
+          <div><h4>อัตราเติบโตรายปี (เทียบปีก่อนหน้า)</h4><p class="cap" id="hmCap"></p><div class="scroll" id="hm" style="max-height:430px"></div></div>
+        </div>
+        <div class="scroll" id="tbl" style="max-height:460px"></div>
+      </section>
+
+      <p class="foot s12" id="foot"></p>
+    </div>
+  </div>
+</section>
+
+<aside class="drawer" id="about" aria-label="เกี่ยวกับข้อมูล" aria-hidden="true">
+  <div class="dr-head">
+    <div><h2>เกี่ยวกับข้อมูล</h2><p>ที่มา คุณภาพ และความหมายของตัวเลข</p></div>
+    <button class="dr-x" id="aboutX" type="button" aria-label="ปิด">✕</button>
+  </div>
+  <div class="dr-tabs" id="abTabs" role="tablist"></div>
+  <div class="dr-body" id="abBody"></div>
+</aside>
+
+<div class="tip" id="tip" role="status"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* config — ข้อความและค่าตั้งต้น แก้ที่นี่ที่เดียว */
+window.CONFIG = {
+  TITLE: "สถิติการรับประกันชีวิต",
+  SUBTITLE: "จำแนกตามภาคและจังหวัด พ.ศ. 2555–2565",
+  SOURCE: "สำนักงานคณะกรรมการกำกับและส่งเสริมการประกอบธุรกิจประกันภัย (คปภ.) กระทรวงการคลัง",
+  SOURCE_SHORT: "ที่มา: คปภ.",
+  DATA_FILE: "data_cleaned_dashboard_ready.xlsx (ชีต Dashboard_Data)"
+};
+</script>
+
+<script>
+/* data — สร้างจากชีต Dashboard_Data / IQR_Screening / Issue_Log
+   หน่วย: เงิน = พันบาท, จำนวนกรมธรรม์ = ราย · ลำดับค่าในแต่ละปี = [premium, policies, sum, payments]
+   prov = ระดับจังหวัด · official = ยอดรวมที่เผยแพร่ระดับภาค/ประเทศ */
+window.DATA = {"years":[2555,2556,2557,2558,2559,2560,2561,2562,2563,2564,2565],"metrics":["premium","policies","sum","payments"],"unit_money":"พันบาท","prov":{"กรุงเทพมหานคร":[[183469135,5256715,5193232835,63370839],[209887430,5756667,5052225463,76499807],[236135204,6750665,6252107768,71313670],[244265967,7700957,6885097181,85211334],[266582322,6782751,7048789964,101887006],[292921897,9240015,25990837798,111760250],[309222071,9595142,15759683868,157859702],[307175687,9903228,10708216503,181561553],[289184588,15273391,14139640367,173008682],[350415870.19,7045093,10583061567.11,287259208.63],[262000000,7031384,11900000000,97473923.84]],"สมุทรปราการ":[[12329548,560868,240197202,4864862],[13300179,607798,284324120,5348151],[13705762,626339,256023939,4058325],[17155883,682781,290333252,3850292],[19011060,693269,298846928,4565786],[21312899,765167,332105556,5457235],[18144421,657423,475975088,4682806],[18349353,704779,523472985,6366975],[17975855,984261,794434576,5932730],[19744493.02,802622,614219044.15,9683587.93],[22240764.34,855905,613000000,10229479.98]],"นนทบุรี":[[14612550,717621,226928293,5903152],[16272465,781355,279413270,6591977],[18686306,817192,342610378,6506701],[21178668,810404,370993625,8246161],[22238994,853211,328138666,9112624],[25404516,908091,479873096,10214499],[25459045,930957,640653251,8032857],[25104673,964219,637204327,14915682],[25969427,1408892,989004940,15127762],[25051438.51,1105664,849588026.44,16481446.07],[30637909.52,1108901,758000000,12366412.26]],"ปทุมธานี":[[7910137,386848,151691914,2880321],[8700918,419451,188120468,2982731],[9800638,442083,173858940,3131964],[10734931,452817,187995474,3831003],[11457953,468173,200745533,4106370],[12916205,529399,235789232,4775251],[13187404,544705,344439628,5088550],[13458357,577511,374882685,6967757],[14093599,867891,603076047,7482672],[12850872.72,707114,502470669.6,7182270.28],[14908341.21,712964,452000000,7110950.08]],"พระนครศรีอยุธยา":[[3517421,258174,87033534,1388104],[4016037,275380,100498629,1448111],[4510438,285030,102241882,1550461],[4708968,278464,101188551,1847260],[4865340,284416,105633689,2003104],[5304653,306935,113639613,2244997],[5488078,306190,156545636,2255129],[5392023,324019,177186759,3134305],[5964076,458962,265006015,3455932],[5214976.3,351690,196804132.52,3085150.2],[5930604.45,335787,176000000,2476619.0]],"อ่างทอง":[[1091632,94874,18960611,604349],[1305768,99030,31564222,603200],[1367142,101287,21982524,589679],[1634659,100537,24073449,655011],[1527197,98434,29340130,798745],[1588246,100620,25431657,790207],[1528049,99281,31392368,671739],[1408829,97742,34148100,935616],[1391115,121831,49074716,1101446],[1319189.53,97732,33997567.78,883889.69],[1521371.92,95058,31359142.18,474590.89]],"ลพบุรี":[[2228553,184652,40579019,921756],[2523653,201229,54070543,966850],[2861077,212836,57321892,1234696],[3056429,209954,58161593,1196269],[3209742,208818,52018096,1400839],[3343621,214598,65727962,1444437],[3163935,211234,84005470,1435540],[2981127,208078,88409656,1912099],[4912101,374937,162520973,2915560],[3910110.47,270051,115067273.89,2349436.72],[3569863.09,213669,89496307.74,1426678.15]],"สิงห์บุรี":[[793268,50076,13145658,280500],[846145,53737,16096353,285344],[937250,55309,14723697,313934],[965127,54280,14595233,441338],[1003281,53768,15707304,418185],[1061845,57279,16910804,493809],[1029806,55997,20841205,442991],[942365,54805,22806489,510752],[988543,79246,35659441,629226],[856376.92,63248,24752494.97,564439.92],[1010334.17,57677,21998299.79,381835.54]],"ชัยนาท":[[893906,80723,16478365,426347],[1058739,85176,26281375,440449],[1158603,87808,23413126,506886],[1155196,88161,24985228,633727],[1133368,84838,24093894,638812],[1182498,82216,25207389,599054],[1128705,80403,29827876,594675],[1048863,78049,29993460,657279],[1116017,97330,52761514,786788],[902585.24,76504,30562885.1,641927.67],[1097212.7,74673,29107005.71,453812.19]],"สระบุรี":[[2798780,213235,53669424,1227956],[3207989,228321,70395544,1291196],[3610924,241874,77397265,1336936],[4082693,244689,76475191,1644652],[4146625,240186,89169843,1626194],[4219785,262307,94284436,1758063],[4011736,243160,113852222,1641953],[3852335,245693,123734585,2322346],[3734185,320693,203076458,2116546],[4116339.04,254433,142650131.23,2246148.35],[4672521.16,259085,133000000,1790099.9]],"ชลบุรี":[[10708676,614603,230758847,4768374],[12788859,684417,304082202,5001957],[14451451,723391,306810635,5187647],[15638354,747561,342180706,5794177],[16399861,756281,334752877,7109002],[17874511,837877,389942919,7420193],[17890258,843192,587986653,6920150],[20114123,864274,630244889,9836261],[18636950,1237939,983934505,10633373],[20385058.07,1018829,730729478.73,11216362.69],[21936490.54,1022441,682000000,9662871.68]],"ระยอง":[[5099699,319012,122366313,2283368],[6137592,346458,157107256,2520020],[6832992,363669,160683371,2604856],[7257997,373246,168818774,2848235],[7501296,376968,184022577,3286604],[8237202,418984,209815934,3321939],[8342182,425627,309745543,3223948],[8664751,435121,335063666,4681044],[8545479,596391,499921869,4356559],[8816143.58,478247,372934849.29,4506097.68],[9950718.62,486585,352000000,4426817.39]],"จันทบุรี":[[2901761,225767,60511998,1604806],[3352929,247971,75572535,2087521],[3853807,261230,83125309,1870391],[4055592,273783,89067685,1925776],[4433506,281028,89927580,2286248],[4896288,300746,95682786,2314973],[5027783,303775,172815075,1680391],[5138171,306351,181334195,2725535],[5355332,444571,305451486,3103560],[5004794.67,312270,186833443.37,2474400.2],[6283282.19,310400,187000000,2671755.33]],"ตราด":[[1111668,91896,22839819,803317],[1238403,103365,26701765,842875],[1396802,105853,29686577,665645],[1387377,106234,29371414,717837],[1449375,106356,28857446,866189],[1507992,113963,31801603,883134],[1466563,112476,49857399,679332],[1469935,113630,51782531,1208399],[1489311,161418,83725767,1104811],[1406070.86,113213,53578382.73,981059.55],[1758593.69,110186,51783106.22,908512.78]],"ฉะเชิงเทรา":[[3120758,211215,64041597,1196877],[3462263,226127,75089207,1287320],[3933387,233535,80098179,1416515],[4196957,237269,83512063,1636641],[4260994,239104,81459893,1811218],[4660151,255462,89488234,1791521],[4898188,257971,136244085,1777566],[4605444,261114,150617849,2705048],[4546632,358475,237748857,2751314],[5009007.71,290102,167784899.87,2908164.98],[5420947.34,289776,159000000,2327622.17]],"ปราจีนบุรี":[[1271089,106732,27437720,470185],[1541001,129024,34950289,630330],[1775381,135243,38584729,577762],[1930232,137659,39680956,738064],[2072078,137091,40382947,822545],[2091308,147118,49894508,843900],[2112070,143093,62245335,696665],[2052583,145750,66662978,1175827],[2140202,185311,98313016,1164536],[2030072.38,159287,76583649.11,1127986.05],[2426036.54,159279,76103746.75,951622.89]],"นครนายก":[[725770,49797,13256894,300197],[718573,55782,15632747,289678],[848755,58297,14850582,299672],[1036042,59974,15569973,369461],[997159,60395,17356756,418006],[994655,62583,18546423,428724],[956102,62812,25696664,303127],[925338,62271,26748855,527719],[941373,81651,41239058,558542],[993837.17,68915,31115935.86,616046.15],[1185784.02,68194,28937521.7,479602.58]],"สระแก้ว":[[1053868,88644,20073349,430650],[1353763,110404,25828383,522895],[1581728,116689,30420574,570753],[1675585,117885,33288579,659218],[1703853,115968,28349872,783324],[1802084,121078,60818786,740175],[1745413,119331,73429965,529686],[1727133,116147,78084059,945158],[1757028,142340,88634389,922047],[1638556.58,121931,58531736.24,1039086.99],[1956525.89,120877,61484456.47,828475.3]],"ราชบุรี":[[3196961,223077,56076655,1633034],[3665405,237585,70058506,1676702],[4018456,245410,68767604,1632105],[4337390,247516,74513665,1993788],[4592532,248665,81792438,2073155],[4949701,263266,87097934,2240280],[4900700,264995,128978942,2039546],[4775305,265436,137280362,2739205],[4729790,362119,226611043,2822878],[4610478.22,282690,148763252.15,2620509.91],[5782318.0,281498,148000000,2407066.43]],"กาญจนบุรี":[[2045308,156692,39063860,980315],[2328585,169016,49549007,1127654],[2583759,174063,51153954,1054590],[2744607,173516,58498399,1229541],[3486764,176488,57560202,1212277],[2955251,183522,67982225,1218074],[2862838,184448,98759675,1028971],[2786208,183216,101763952,1539308],[2770393,253437,161468630,1511399],[2830387.27,201477,109064019.58,1648841.89],[3451830.87,199118,110000000,1479419.14]],"สุพรรณบุรี":[[3270009,293163,61217825,1528139],[3633976,316329,72718452,1585420],[4046846,320674,72331761,1576699],[4214233,316633,72671097,1969099],[4218251,307568,75954100,2194488],[4500566,311415,78209502,2234619],[4331199,307089,106080870,1744415],[4354361,303598,113756946,2643844],[4458459,407496,181903709,2610124],[3834449.94,310290,119718363.01,2262061.16],[4665966.04,290802,112000000,1831161.45]],"นครปฐม":[[5633076,314342,104574448,2621872],[6712158,342110,129889568,2700785],[7558302,356542,128391141,2824049],[8282542,371627,136681483,3365551],[8715338,378189,141487979,3848676],[9704471,411453,153271782,3871525],[9857333,419046,252402264,3748630],[9657005,434535,271388287,5795427],[10058371,643634,452793317,5755606],[8719943.63,461818,292322565.36,4952640.42],[11867056.5,468009,291000000,4692455.26]],"สมุทรสาคร":[[4242847,209202,84138018,1748163],[4883754,226599,101374511,1810000],[5423712,212449,83030455,1457102],[5987872,223587,90977625,1191036],[6582414,231535,95037144,2461540],[7255932,259415,111533310,2668889],[7455776,266992,134121148,2887121],[6991598,276128,143958312,4011121],[7087389,426990,337243457,3863861],[6806042.71,338102,239530949.02,3817958.1],[8830055.9,347315,241000000,3921587.56]],"สมุทรสงคราม":[[887559,60886,14636415,418325],[1072917,70872,18478853,502350],[1306773,99623,33799480,499922],[1481972,98253,33968245,605316],[1555881,101452,34857344,631149],[1707370,103894,35065717,715286],[1507953,103451,98501089,477688],[1472676,101373,102512997,878744],[1922370,133405,67039914,1094243],[1637496.83,97776,43836357.8,1183255.13],[1651213.75,82329,42752269.93,628402.12]],"เพชรบุรี":[[2151530,170985,32853191,919925],[2427642,181702,41750689,1056918],[2719603,186255,41724388,1025626],[2864072,185906,44503317,1276306],[3042020,185524,46255576,1409382],[3229045,190934,50698561,1510312],[3105224,180339,66654581,1184551],[2939235,185062,73726899,2098301],[3065236,225360,109024867,2069792],[2774456.78,182040,81044660.2,1895054.28],[3093886.21,179311,83311971.4,1037563.75]],"ประจวบคีรีขันธ์":[[1991984,135237,39443827,788273],[2245765,145794,49749228,864485],[2473486,150059,46421661,838402],[2615767,149106,47986531,1130687],[2663244,149642,52997478,1218606],[2782064,159360,53655939,1279844],[2652701,154667,74760845,1095350],[2466983,153061,78706948,1741668],[2603352,204698,123580023,1658957],[2680183.99,166400,88017797.54,1938313.65],[2902690.69,162836,81043302.14,1227759.6]],"เชียงใหม่":[[7778514,525610,120660287,3681818],[9214474,579706,150900211,3817350],[10685648,615547,171908261,4008898],[10991192,636701,191390003,4336807],[11350658,650788,191153175,5286201],[12188942,680073,207412599,6050110],[12407831,686311,265556989,6419787],[11927641,685149,289571472,8142908],[12454290,937978,430861320,8036130],[11484499.9,728106,327815453.1,6742582.86],[13851194.23,720747,316000000,6132786.78]],"ลำพูน":[[1260236,109061,23462609,607291],[1493423,124531,29740577,605857],[1689023,133673,33684898,730226],[1827002,136521,36964551,760677],[1878213,139567,35817126,874669],[2006838,147526,39910965,929360],[1953289,150731,50631525,856696],[1920219,150883,53549423,1080537],[1974426,195813,78557246,960344],[1892056.42,160063,59071632.36,1010260.38],[2237987.42,157625,55490776.7,964048.34]],"ลำปาง":[[2302323,229019,41139044,1129535],[2612128,252223,51485954,1170049],[2885504,258038,53869585,1089842],[2997913,258531,58233388,1460235],[3187564,267536,56047778,1488163],[3323942,270992,59571951,1512069],[3282835,267058,74649396,1344977],[3231279,266205,79485687,1993441],[3317773,331332,113587467,2009417],[3159083.48,260077,87490897.8,1878352.87],[3527201.92,245644,82273770.36,1300220.16]],"อุตรดิตถ์":[[1105370,100101,17336479,390391],[1361703,113310,24004937,421690],[1465937,119865,24774988,480777],[1547453,122699,28752030,592454],[1545895,120421,28268707,603353],[1589849,123336,29820348,643314],[1476721,123193,33455876,468822],[1463917,121460,33546328,832346],[1465250,154310,48244803,879211],[1390054.17,118981,37607161.25,684547.2],[1585333.41,115132,35355442.5,495533.65]],"แพร่":[[1313011,118043,30282497,501595],[1668829,131866,58919334,711501],[1819009,134009,42629010,854123],[1842712,138368,32057436,837803],[1898111,138770,31847410,977453],[1914976,142450,36272434,871310],[1892958,142794,42565871,633226],[1836026,141272,45327586,1045197],[1863048,181652,68355906,1373765],[1819320.58,141519,48118149.81,965779.5],[1965798.86,136420,44627010.57,743256.94]],"น่าน":[[1028361,119941,18597055,326821],[1249379,144204,25068516,386424],[1417687,151216,27546210,460981],[1511406,155157,29113533,611529],[1542518,155450,29648309,659371],[1637127,160118,33067005,677329],[1591537,158208,35345657,483906],[1544759,154538,38240987,769995],[1533753,199257,49438284,839406],[1428987.66,153344,40662022.15,721351.92],[1625279.32,150663,40703886.28,582181.5]],"พะเยา":[[1348130,164542,28947020,721883],[1630974,190249,38159754,867216],[1825444,204984,40238429,952085],[1924256,206396,40468141,904667],[2046923,206496,43272112,1052820],[2087733,208477,44056740,1065112],[2021969,208798,58301008,782544],[1934460,208317,61673179,1168791],[1990043,269848,89487066,1199648],[1861083.91,211887,62076813.32,1124399.6],[2105605.35,202984,58418296.14,861533.73]],"เชียงราย":[[3541079,331491,65541788,1538081],[4188153,372565,87451531,1698068],[5030242,390078,90831926,1922584],[5264515,404174,103560171,2070104],[5365581,401412,117136829,2551401],[5580174,409176,98669914,2622073],[5447426,412297,138062647,2142905],[5278800,402745,153677511,3104573],[5169066,534141,228620933,2975000],[5537492.19,417695,172533294.59,3004629.33],[5966452.96,414108,170000000,2429664.74]],"แม่ฮ่องสอน":[[386445,46270,7047522,148355],[433107,52567,8831029,168693],[482601,54910,9816007,162488],[498593,55666,11034717,192076],[519566,55973,13588597,229451],[585120,57792,14188064,219111],[541957,56912,13864807,150437],[557530,55482,17221066,249055],[528951,71344,25724344,229678],[456336.53,50539,16847228.43,246360.27],[518878.44,45815,15739990.0,193012.52]],"นครสวรรค์":[[3359679,257710,57093375,1552280],[3720068,284648,74007113,1857558],[4185409,298708,77736216,1978860],[4218611,299427,79551592,1695054],[4203965,289431,106130947,2054230],[4383397,298420,120745449,2144221],[4280547,296022,123568581,1935899],[4064198,287007,126041039,2486596],[4426870,370366,247907629,2774605],[4046410.25,286802,134105521.09,2218673.48],[4581747.79,279062,140000000,1973274.0]],"อุทัยธานี":[[743741,76254,14257113,320489],[836503,82714,18001366,327277],[933511,86077,19105115,384831],[948029,84057,26355477,436166],[1020298,81064,19101369,453147],[1049174,82172,28784780,500281],[1017178,81055,34689983,516153],[985922,79030,35151909,613031],[990020,103258,48543256,606965],[911489.65,78807,36721937.2,497622.95],[1080918.7,76589,35389059.84,410568.66]],"กำแพงเพชร":[[1840148,177000,33149163,765111],[2075990,192591,46247657,790927],[2320503,200193,48794627,983201],[2409580,200260,54154823,937183],[2257062,194032,48972295,1054744],[2401448,197341,49762652,1153454],[2172429,194383,63539472,747029],[2074732,187092,60201866,1349189],[2139234,228709,82738727,1419090],[2127622.74,186603,66280496.88,1101997.43],[2733566.82,188673,64889809.84,891891.1]],"ตาก":[[1381164,121502,25395740,549468],[1506024,130901,34440584,585927],[1627986,134916,33238528,606146],[1682490,135934,34141730,748366],[1732738,135793,39362709,774073],[1940262,141321,42288258,770691],[1857878,140789,47002174,732153],[1882146,140918,53606224,1051604],[1959555,192054,85933358,1143163],[1874702.59,144363,59557915.14,1079008.2],[2400410.44,149058,58979350.18,900924.17]],"สุโขทัย":[[1614588,161045,27703180,696026],[1740196,180433,33172883,809469],[2083016,184027,42561821,807816],[2030801,182002,44388937,900310],[2004124,178375,46496483,955726],[2114548,179986,47719347,979360],[1958397,176258,52796966,683266],[1968958,176391,55815681,1248003],[1974930,201743,70318476,1243824],[1905383.52,174795,59826533.44,1204646.1],[2114103.9,168633,59679202.24,703337.12]],"พิษณุโลก":[[3586480,233581,50627907,1218204],[3196899,252523,67064748,1220464],[3543797,262226,67325411,1367954],[3534711,260255,71245542,1346449],[3455136,257730,72880541,1554094],[3573105,263805,70412803,1656068],[3301292,263919,90413249,1417367],[3205528,250860,75752794,1987763],[3353822,317137,131408011,1934072],[3162562.8,255060,104192747.73,1805989.4],[3701727.66,248773,100000000,1491733.19]],"พิจิตร":[[1440490,150323,28842258,737877],[1690368,161924,36374102,667536],[1786693,166165,37142098,876359],[1774014,161817,36713691,776314],[1842725,163135,41167502,849112],[1897643,160750,40944041,830796],[1894178,159803,51250918,753921],[1909965,158665,60046063,1145817],[1987103,212520,76514398,1195884],[1769192.31,162222,57029434.12,1005265.86],[2087336.31,158614,53428650.52,838757.73]],"เพชรบูรณ์":[[1797628,194636,37095302,805444],[2106722,215147,51565486,862603],[2572979,231708,54249408,1066095],[2519369,234364,54733194,955228],[2581858,235613,54313134,1192347],[2744968,247532,72045213,1237792],[2757733,252256,85260621,1031197],[2804538,250112,91473896,1481997],[2861466,335052,129092220,1586282],[2713974.57,255541,96294728.17,1761705.07],[3067916.84,249319,89374833.06,1373268.97]],"นครราชสีมา":[[6482244,584074,151378725,2877351],[7900731,655680,199935841,3042702],[8705008,677201,186008438,3718004],[8960859,678548,179218869,3754716],[9033180,674611,232596818,4150987],[9697032,699232,213733127,4060870],[9553735,691786,290481177,3839751],[9025682,684491,300297463,5156145],[9372723,944881,470036884,5668890],[8402647.51,699926,318617040.76,4737633.04],[11511751.52,682977,296000000,4560878.64]],"บุรีรัมย์":[[2285183,222742,72770339,830047],[2798234,261255,122464994,961759],[3381647,271222,85252471,1278887],[3450810,281984,118164287,1251733],[3548574,283787,97572714,1430779],[3782560,301351,116595149,1489575],[3801651,303133,128109726,1066959],[3744406,295953,131285371,2088692],[3683358,356445,170952242,2129755],[3702671.06,305952,155028864.71,2013275.64],[4090146.19,298034,147000000,1641184.58]],"สุรินทร์":[[1811481,181407,34609937,624616],[2285736,208093,51428422,881398],[2755245,219414,55188296,886355],[2936166,226380,54033153,1023734],[3019730,226205,61717984,1042600],[3195177,236742,64518990,1159036],[3072387,240744,81702444,844677],[2976458,238018,83729763,1505531],[2949891,293540,122261247,1659900],[2831534.52,247496,95248258.97,1684759.54],[3241559.07,241792,91959078.48,1162072.46]],"ศรีสะเกษ":[[2205260,263287,46629454,777135],[2496937,294651,59342857,891776],[2804671,300268,57644849,969667],[2996429,307273,57941950,1071041],[3044793,308736,72808468,1195707],[3273570,323414,75507959,1283207],[3231095,327660,89305425,955624],[3114258,325000,88191541,1596836],[3206864,396802,123273075,1706688],[3006438.16,330054,100614808.24,1575811.07],[3460837.01,322440,95919006.16,1211042.8]],"อุบลราชธานี":[[3468284,364642,65025928,1245677],[4213691,410448,90039752,1575756],[5017617,421288,96558371,1635488],[5488367,436358,95789640,1738046],[5502977,437992,112610769,2031839],[5968513,465646,124344024,2219441],[5879381,477204,149975196,1776164],[5574477,478832,158234836,2655797],[5605760,616584,224088808,2973036],[5296124.03,519051,179398808.8,2944363.12],[6408946.17,513620,170000000,2447937.85]],"ยโสธร":[[1029801,122829,18617556,451789],[1187215,135305,26706479,458486],[1388204,135961,28535274,482829],[1440139,136427,27515262,577958],[1601489,135310,32284037,591982],[1501456,139696,34624316,614618],[1452622,136987,38241608,450918],[1364785,133090,38910057,830860],[1437183,165712,53599926,962257],[1266406.27,115604,40239360.55,674115.43],[1396350.41,111280,37756644.39,517199.0]],"ชัยภูมิ":[[1911912,227081,41968762,698851],[2399082,264509,55781309,906272],[2736875,276391,60931097,1038747],[2945899,279527,67357860,1117364],[2891113,277641,65440975,1231370],[3125099,292702,72264067,1244725],[2890036,293696,85803005,889134],[2877100,294078,92124275,1385838],[2903488,366482,130794475,1618806],[2700446.9,296079,96500408.12,1610074.92],[3103477.23,289519,87941590.35,1187787.93]],"อำนาจเจริญ":[[562696,62065,10999374,218217],[741403,71534,20913268,341631],[863379,73692,21941090,287009],[879376,72817,24195885,314953],[863296,72724,23902314,349438],[932417,76217,25356609,374385],[920741,76925,29061215,282748],[856628,74500,29023377,450039],[915997,87660,39184994,440446],[825668.39,79042,26463763.15,463132.76],[983255.47,79311,29901157.82,386557.94]],"บึงกาฬ":[[229621,23906,5366481,21250],[559232,58256,14203089,117115],[661583,64111,16499270,179477],[699297,66162,19397531,228522],[691630,69563,19939023,288558],[799704,78133,23002261,256177],[826427,81436,27794240,197890],[853675,84358,30946612,334624],[827448,109531,44102578,339479],[765804.52,84090,32999108.02,305398.24],[894946.0,82402,29735129.77,339862.62]],"หนองบัวลำภู":[[863865,139866,22987689,294380],[1004882,153519,30294206,417373],[1104529,162748,32765123,450432],[1176591,165636,33197563,524898],[1194690,166584,36057438,477297],[1330861,176268,41101227,481879],[1350793,180673,49066389,399226],[1396443,179505,51280114,574689],[1566934,229082,71195951,695065],[1387693.36,186081,55172596.67,655207.98],[1602235.32,180435,55919470.8,595227.36]],"ขอนแก่น":[[4923492,452892,118688427,2136147],[5895522,510561,160694022,2473627],[6720181,532506,167818444,2777460],[7089143,546139,185466021,2838592],[7057955,540546,173646348,3203827],[7721315,580154,189660571,3220564],[7660148,585687,232921615,2835492],[7464319,582202,243459253,4186046],[8160667,814696,365737711,4565958],[7287122.14,609816,268641231.86,4201444.06],[9664784.57,611639,255000000,4305088.94]],"อุดรธานี":[[3256700,360586,70571380,1243202],[4129344,392934,96961970,1515066],[4611913,412477,108247016,1712259],[4744220,414336,107859698,1769274],[5071350,424350,120656409,2108651],[5450220,447210,131864719,2140617],[5868567,472967,166369233,1980898],[5711680,480432,175257418,2845263],[5728403,613097,248411110,3079998],[5341360.58,493439,187806852.92,2912228.4],[6510442.41,493072,178000000,2878432.1]],"เลย":[[1116027,130847,29052034,382695],[1421253,146712,39829683,405872],[1585000,155505,43678735,507015],[1674262,159078,46590986,557108],[1637689,158902,47386528,691473],[1774007,163729,52961986,723564],[1885181,168612,64949745,584267],[1955017,170378,75033853,846804],[2086276,244004,106345130,970219],[1887979.03,185497,80532847.23,818779.92],[2280108.95,176846,79093797.06,1245465.18]],"หนองคาย":[[1630313,169810,33480426,584702],[1707998,159491,40569023,648374],[1868641,165223,40646312,590682],[1927245,168595,40761348,753835],[2026890,170125,51206402,781262],[2145830,179244,53407623,937973],[1977151,160145,59621790,749420],[1949614,157700,59388712,1092723],[1961038,204282,78282005,1028202],[1822134.48,160320,62015921.08,1034629.61],[2119839.42,158918,68451935.57,963504.79]],"มหาสารคาม":[[1976322,242070,38808761,829473],[2607362,270735,59382958,1023045],[3008842,293586,66709725,1365352],[3037878,307078,71861447,1328333],[3122305,309389,72119870,1494235],[3425138,324815,80234771,1584259],[3476863,328420,93368624,1431943],[3441975,326593,96191120,2095410],[3493117,413784,134626195,2071256],[3087595.74,321599,100850189.82,2016352.71],[3834357.51,320430,98611159.43,1992508.34]],"ร้อยเอ็ด":[[2420749,284806,50103441,945049],[3104376,324503,73233198,1264598],[3627952,348552,80078464,1549415],[3951736,366679,87863890,1513148],[4011007,374936,92931303,1646454],[4389295,390344,100477915,1820708],[4341198,395491,115759771,1618492],[4327368,390496,118610180,2276248],[4522381,489021,197017932,2416257],[3931759.08,391588,148965070.9,2285933.71],[4935903.58,383952,121000000,2319683.48]],"กาฬสินธุ์":[[1582714,201566,38619032,477312],[1870611,216916,52215369,770580],[2186328,229096,59946270,1057652],[2337136,235713,72650927,897528],[3558383,237696,57362226,1106728],[2522231,254056,82548050,1106490],[2581536,256112,88275735,1007524],[2510606,253192,87735831,1474527],[2628920,366510,124415110,1554651],[2279516.47,258934,92413797.36,1306667.94],[2912294.83,257083,88608470.6,1515244.34]],"สกลนคร":[[1577354,193370,36146615,633262],[1958505,218954,48096436,807242],[2222881,225421,47572446,802760],[2308119,225971,47102932,858467],[2325653,224431,53460196,911844],[2448971,237105,58925516,998746],[2429539,238152,67757882,799050],[2393689,234749,71957074,1189308],[2453637,301719,109505406,1384483],[2283818.93,235147,81384124.95,1225844.71],[2726125.25,233182,69125454.71,1061385.38]],"นครพนม":[[1036759,125185,23889965,404108],[1225083,146964,30723658,476028],[1405961,150874,30423810,508895],[1478830,152349,32154566,585965],[1509586,150020,35009881,650759],[1559969,157106,38262749,664955],[1565305,157884,45273471,553123],[1558236,155984,53870746,809058],[1558992,201022,73981496,880712],[1501641.24,158707,62912769.56,795968.17],[1748499.66,157546,63577330.17,675686.59]],"มุกดาหาร":[[633237,70587,15720281,189129],[789477,76190,22589268,258734],[853049,77144,22301645,288605],[924924,78116,24930985,336615],[898763,76839,25483349,370009],[956040,81286,27536007,402678],[977630,82483,30126031,392282],[916045,82111,31555352,450851],[1022706,117145,45551514,539425],[939929.15,86789,36792048.54,537766.48],[1181874.81,83400,35121576.65,486100.68]],"นครศรีธรรมราช":[[3757031,257122,63802625,1474175],[4391347,269388,86755153,1610436],[4702799,257615,85993705,1786909],[4757017,255641,97208578,1921075],[4760929,249527,93917395,2172749],[4975657,265988,97037422,2033725],[4734099,261100,120763726,1921483],[4577861,263099,132572484,2554332],[5038241,349253,222338145,2848602],[4929751.72,301563,169182517.95,2603221.79],[5801943,298033,164000000,2242446.45]],"กระบี่":[[1267739,80237,27546656,502068],[1473717,83070,39522695,570394],[1610771,83977,36829526,570515],[1584488,83489,40826755,709619],[1553168,83048,38598042,784318],[1632015,90883,41550515,739262],[1605157,91157,51626448,695620],[1513542,90518,56655747,903380],[1542516,121363,85644499,961682],[1401992.59,99023,63033909.19,876489.44],[1844504.43,98323,60709086.89,948942.72]],"พังงา":[[911000,59282,18708596,386000],[1186176,63887,34816876,442715],[1242971,64954,29476366,449659],[1195789,65420,24696274,537492],[1270765,66027,31979308,580246],[1333034,71707,29592991,531064],[1266785,70890,37590981,379326],[1201037,70409,40788130,753642],[1199097,86941,63150831,789835],[1189510.02,72837,43770626.24,732151.73],[1303272.03,71790,36648017.07,509429.66]],"ภูเก็ต":[[2814128,169840,74336025,1486884],[3386969,183861,94694216,1431234],[3673818,192626,91439248,1504767],[3838263,198284,89521881,1485852],[4157452,202491,95267680,1847188],[4466285,223569,105909971,1901273],[4779223,227248,162797643,1923752],[4683218,231308,177110502,2583017],[4722108,322870,275207939,2869292],[4965758.4,255414,200214733.13,3063921.24],[6051078.64,246921,184000000,2892629.75]],"สุราษฎร์ธานี":[[4090406,252144,110238262,1503425],[4735552,262633,144058223,1549910],[5210679,278170,121498918,1931646],[5318591,273901,129796859,2159157],[5225343,269228,148923701,2439513],[5608531,296637,169392824,2449003],[5327411,290886,184947833,2189473],[5101404,288369,206037634,2803590],[4736871,360480,277095930,2747693],[5074665.24,306101,226459052.6,3058974.84],[6445631.34,311977,230000000,3046429.08]],"ระนอง":[[734737,39985,14481359,303966],[831266,42210,17113611,347967],[928344,42985,17358152,299822],[924048,41904,16768879,330294],[1062457,41408,16965821,397760],[941897,48962,18246958,443529],[898340,48082,24442314,368548],[880163,46603,26412701,525157],[840775,58934,38954448,586983],[909698.79,50075,28264635.75,607167.15],[1051546.99,48933,26295770.11,401906.12]],"ชุมพร":[[1761010,129714,32564486,849809],[2083801,139594,41912095,920818],[2362045,141863,41855260,930580],[2358624,138693,42251895,1065604],[2569862,136826,41912430,1104934],[2560423,150221,45705824,1131586],[2424260,148283,63267710,880918],[2431236,146466,68789002,1453445],[2420811,191114,107560725,1478401],[2640803.4,159326,80811266.36,1417366.62],[3212593.64,159005,74323892.3,1313620.2]],"สงขลา":[[6920618,413597,131260796,3129499],[7888643,439323,167519156,3105980],[8822102,451864,156454872,3252946],[8906092,451966,152294541,3492081],[9090139,453300,175707991,3948458],[9736183,466877,178729286,4276082],[9443351,464467,256830523,3836509],[9134310,464421,273904162,5673735],[9346482,664246,433455382,5526605],[8199075.9,495386,292009833.61,4534484.4],[10463105.32,483914,292000000,4503321.82]],"สตูล":[[526003,39112,8792714,223791],[606901,40222,11980676,203524],[660318,40176,11393574,223843],[629277,39257,10432199,276449],[593594,38433,13176148,298478],[658219,43223,14450612,279285],[647791,42943,18038748,228905],[593309,40979,18380822,339017],[748348,66576,30444807,435435],[647991.15,50591,22881592.52,465517.6],[696935.24,40582,19396442.7,294061.4]],"ตรัง":[[2012316,140519,37975606,1216199],[2251212,143644,48043888,1180027],[2412173,142639,42721148,1095810],[2334397,139434,41163346,1028898],[2268001,135576,44678104,1132134],[2443924,143109,46553640,1172881],[2363652,142501,63846215,998792],[2290801,140682,66921886,1433217],[2265244,200045,105138231,1501885],[2290428.52,151099,73871124.39,1364794.11],[2769628.88,148783,76066678.69,1233317.96]],"พัทลุง":[[1229152,91258,24703919,430934],[1387785,96310,32076597,522235],[1470090,97245,29707964,522826],[1481461,95713,29665871,719176],[1405575,92620,29245998,622326],[1526633,99807,34870429,649189],[1506095,99823,42402501,579114],[1446685,97239,39768410,759338],[1510266,124541,61897218,837522],[1466640.58,105125,50352789.15,710773.02],[1776279.8,103503,48311065.6,632754.53]],"ปัตตานี":[[924469,70346,20126238,437731],[1033553,73144,28340296,442812],[1120149,71379,24545460,442562],[1197762,70239,25711316,502873],[1192954,68930,23383844,496389],[1311055,74627,24947571,510683],[1236974,72631,36820716,462662],[1251230,71060,48221942,634973],[1206887,89332,69669772,733848],[1128498.25,72704,51000904.6,560688.0],[1317322.56,71088,47611887.56,556642.89]],"ยะลา":[[1086901,66053,17987701,443860],[1228055,70399,23478932,553822],[1407206,71201,20758192,609299],[1486806,72006,21173165,735942],[1526243,69836,23499466,739186],[1598839,77030,25356841,661279],[1450774,74381,33994483,442586],[1435102,73415,36966412,744372],[1373498,92962,54825480,758642],[1227610.22,75445,39712226.44,728213.21],[1432725.75,73456,40508460.84,525167.98]],"นราธิวาส":[[847651,49873,16824389,294232],[1040680,51885,21539435,332622],[1076624,52470,15596396,349429],[1147484,52813,17786288,515165],[1195149,53196,18464573,433280],[1241080,63773,22608862,463319],[1211368,62087,27035355,418031],[1173523,59966,31213785,615276],[1238000,69209,45800002,663058],[1101165.78,62426,39070385.99,588406.51],[1202196.32,60730,30594271.29,360791.26]]},"official":{"all":[[384772055,20473865,9187169949,148601640],[443230179,22500581,10274216618,170385265],[498143168,24171589,11501390276,169435857],[523775284,25399054,12461400892,193090709],[557766067,24572537,12838654832,224353187],[605457182,28099827,32460867651,240910268],[615968955,28397263,24354822006,271804667],[610170959,28787503,19834898550,349909595],[599701699,40819046,28102769600,348370396],[648821367.76,27186271,20963029569.37,457730073.81],[616000000,26926834,21800000000,247000000]],"central":[[95588358,5818321,1841974796,40993167],[108795478,6345032,2299297722,44464919],[121443380,6612740,2339454043,43331318],[134379145,6741842,2510092108,49796446],[142268126,6837367,2534746292,57103068],[155482859,7367682,2972475908,61260940],[152253462,7278656,4275812877,54863379],[152678773,7461959,4555472771,82975420],[156252584,10579278,7153248589,85530265],[153143362.15,8332445,5310502565.54,88306135.67],[179000000,8292675,5010000000,76193173.44]],"north":[[35827387,3116129,627178339,15690669],[40724940,3462102,835435782,16968609],[46354989,3626340,875452538,18733266],[47522647,3672329,932858956,19561422],[48432935,3671586,975205023,22610355],[51019246,3771267,1035672563,23862451],[49856156,3770787,1260955741,21100285],[48590616,3716124,1330382711,29750842],[49989601,4836513,2005333444,30406485],[47540253.29,3786406,1466231966.61,27053172.41],[55151460.39,3707859,1420000000,22285993.3]],"northeast":[[41004014,4423618,925434607,15864392],[50296674,4977210,1295405802,19237434],[57509506,5192680,1308747146,22086990],[60447426,5305166,1394054800,23041830],[62611053,5320387,1484193052,25755799],[65999405,5604450,1606927636,26784467],[65741984,5656198,1933964323,22655584],[64012460,5621661,2017082947,33845291],[66085783,7331999,2933363790,36685483],[60548291.56,5765211,2222597872.2,33799387.43],[74607735.39,5677878,2100000000,31492850.97]],"south":[[28883161,1859082,599349372,12682573],[33525657,1959570,791851849,13214496],[36700089,1989164,725628781,13970613],[37160099,1978760,739297847,15479677],[37871631,1960446,795720501,16996959],[40033775,2116413,854953746,17242160],[38895282,2096480,1124405197,15325718],[37713423,2084532,1223743618,21776489],[38189145,2797866,1871183410,22739482],[37173590.57,2257116,1380635597.91,21312169.66],[45368763.95,2217038,1330000000,19461461.8]],"bkk":[[183469135,5256715,5193232835,63370839],[209887430,5756667,5052225463,76499807],[236135204,6750665,6252107768,71313670],[244265967,7700957,6885097181,85211334],[266582322,6782751,7048789964,101887006],[292921897,9240015,25990837798,111760250],[309222071,9595142,15759683868,157859702],[307175687,9903228,10708216503,181561553],[289184588,15273391,14139640367,173008682],[350415870.19,7045093,10583061567.11,287259208.63],[262000000,7031384,11900000000,97473923.84]]},"iqr":["กรุงเทพมหานคร|policies|2555","สมุทรปราการ|policies|2555","นนทบุรี|policies|2555","ชลบุรี|policies|2555","เชียงใหม่|policies|2555","นครราชสีมา|policies|2555","กรุงเทพมหานคร|policies|2556","สมุทรปราการ|policies|2556","นนทบุรี|policies|2556","ชลบุรี|policies|2556","เชียงใหม่|policies|2556","นครราชสีมา|policies|2556","กรุงเทพมหานคร|policies|2557","สมุทรปราการ|policies|2557","นนทบุรี|policies|2557","ชลบุรี|policies|2557","เชียงใหม่|policies|2557","นครราชสีมา|policies|2557","กรุงเทพมหานคร|policies|2558","สมุทรปราการ|policies|2558","นนทบุรี|policies|2558","ชลบุรี|policies|2558","เชียงใหม่|policies|2558","นครราชสีมา|policies|2558","ขอนแก่น|policies|2558","กรุงเทพมหานคร|policies|2559","สมุทรปราการ|policies|2559","นนทบุรี|policies|2559","ชลบุรี|policies|2559","เชียงใหม่|policies|2559","นครราชสีมา|policies|2559","ขอนแก่น|policies|2559","กรุงเทพมหานคร|policies|2560","สมุทรปราการ|policies|2560","นนทบุรี|policies|2560","ชลบุรี|policies|2560","เชียงใหม่|policies|2560","นครราชสีมา|policies|2560","ขอนแก่น|policies|2560","กรุงเทพมหานคร|policies|2561","สมุทรปราการ|policies|2561","นนทบุรี|policies|2561","ชลบุรี|policies|2561","เชียงใหม่|policies|2561","นครราชสีมา|policies|2561","ขอนแก่น|policies|2561","กรุงเทพมหานคร|policies|2562","สมุทรปราการ|policies|2562","นนทบุรี|policies|2562","ชลบุรี|policies|2562","เชียงใหม่|policies|2562","นครราชสีมา|policies|2562","กรุงเทพมหานคร|policies|2563","สมุทรปราการ|policies|2563","นนทบุรี|policies|2563","ปทุมธานี|policies|2563","ชลบุรี|policies|2563","เชียงใหม่|policies|2563","นครราชสีมา|policies|2563","ขอนแก่น|policies|2563","กรุงเทพมหานคร|policies|2564","สมุทรปราการ|policies|2564","นนทบุรี|policies|2564","ปทุมธานี|policies|2564","ชลบุรี|policies|2564","เชียงใหม่|policies|2564","นครราชสีมา|policies|2564","ขอนแก่น|policies|2564","กรุงเทพมหานคร|policies|2565","สมุทรปราการ|policies|2565","นนทบุรี|policies|2565","ปทุมธานี|policies|2565","ชลบุรี|policies|2565","เชียงใหม่|policies|2565","นครราชสีมา|policies|2565","กรุงเทพมหานคร|sum|2555","สมุทรปราการ|sum|2555","นนทบุรี|sum|2555","ปทุมธานี|sum|2555","ชลบุรี|sum|2555","นครราชสีมา|sum|2555","สงขลา|sum|2555","กรุงเทพมหานคร|sum|2556","สมุทรปราการ|sum|2556","นนทบุรี|sum|2556","ปทุมธานี|sum|2556","ชลบุรี|sum|2556","นครราชสีมา|sum|2556","กรุงเทพมหานคร|sum|2557","สมุทรปราการ|sum|2557","นนทบุรี|sum|2557","ปทุมธานี|sum|2557","ชลบุรี|sum|2557","เชียงใหม่|sum|2557","นครราชสีมา|sum|2557","ขอนแก่น|sum|2557","กรุงเทพมหานคร|sum|2558","สมุทรปราการ|sum|2558","นนทบุรี|sum|2558","ปทุมธานี|sum|2558","ชลบุรี|sum|2558","เชียงใหม่|sum|2558","ขอนแก่น|sum|2558","กรุงเทพมหานคร|sum|2559","สมุทรปราการ|sum|2559","นนทบุรี|sum|2559","ปทุมธานี|sum|2559","ชลบุรี|sum|2559","เชียงใหม่|sum|2559","นครราชสีมา|sum|2559","กรุงเทพมหานคร|sum|2560","สมุทรปราการ|sum|2560","นนทบุรี|sum|2560","ปทุมธานี|sum|2560","ชลบุรี|sum|2560","ระยอง|sum|2560","เชียงใหม่|sum|2560","นครราชสีมา|sum|2560","กรุงเทพมหานคร|sum|2561","สมุทรปราการ|sum|2561","นนทบุรี|sum|2561","ปทุมธานี|sum|2561","ชลบุรี|sum|2561","ระยอง|sum|2561","นครราชสีมา|sum|2561","กรุงเทพมหานคร|sum|2562","สมุทรปราการ|sum|2562","นนทบุรี|sum|2562","ปทุมธานี|sum|2562","ชลบุรี|sum|2562","ระยอง|sum|2562","เชียงใหม่|sum|2562","นครราชสีมา|sum|2562","กรุงเทพมหานคร|sum|2563","สมุทรปราการ|sum|2563","นนทบุรี|sum|2563","ปทุมธานี|sum|2563","ชลบุรี|sum|2563","ระยอง|sum|2563","นครราชสีมา|sum|2563","กรุงเทพมหานคร|sum|2564","สมุทรปราการ|sum|2564","นนทบุรี|sum|2564","ปทุมธานี|sum|2564","ชลบุรี|sum|2564","ระยอง|sum|2564","กรุงเทพมหานคร|sum|2565","สมุทรปราการ|sum|2565","นนทบุรี|sum|2565","ปทุมธานี|sum|2565","ชลบุรี|sum|2565","ระยอง|sum|2565","กรุงเทพมหานคร|premium|2555","สมุทรปราการ|premium|2555","นนทบุรี|premium|2555","ปทุมธานี|premium|2555","ชลบุรี|premium|2555","เชียงใหม่|premium|2555","สงขลา|premium|2555","กรุงเทพมหานคร|premium|2556","สมุทรปราการ|premium|2556","นนทบุรี|premium|2556","ปทุมธานี|premium|2556","ชลบุรี|premium|2556","เชียงใหม่|premium|2556","นครราชสีมา|premium|2556","สงขลา|premium|2556","กรุงเทพมหานคร|premium|2557","สมุทรปราการ|premium|2557","นนทบุรี|premium|2557","ปทุมธานี|premium|2557","ชลบุรี|premium|2557","เชียงใหม่|premium|2557","นครราชสีมา|premium|2557","สงขลา|premium|2557","กรุงเทพมหานคร|premium|2558","สมุทรปราการ|premium|2558","นนทบุรี|premium|2558","ปทุมธานี|premium|2558","ชลบุรี|premium|2558","เชียงใหม่|premium|2558","นครราชสีมา|premium|2558","สงขลา|premium|2558","กรุงเทพมหานคร|premium|2559","สมุทรปราการ|premium|2559","นนทบุรี|premium|2559","ปทุมธานี|premium|2559","ชลบุรี|premium|2559","เชียงใหม่|premium|2559","นครราชสีมา|premium|2559","สงขลา|premium|2559","กรุงเทพมหานคร|premium|2560","สมุทรปราการ|premium|2560","นนทบุรี|premium|2560","ปทุมธานี|premium|2560","ชลบุรี|premium|2560","เชียงใหม่|premium|2560","กรุงเทพมหานคร|premium|2561","สมุทรปราการ|premium|2561","นนทบุรี|premium|2561","ปทุมธานี|premium|2561","ชลบุรี|premium|2561","เชียงใหม่|premium|2561","กรุงเทพมหานคร|premium|2562","สมุทรปราการ|premium|2562","นนทบุรี|premium|2562","ปทุมธานี|premium|2562","ชลบุรี|premium|2562","นครปฐม|premium|2562","เชียงใหม่|premium|2562","กรุงเทพมหานคร|premium|2563","สมุทรปราการ|premium|2563","นนทบุรี|premium|2563","ปทุมธานี|premium|2563","ชลบุรี|premium|2563","นครปฐม|premium|2563","เชียงใหม่|premium|2563","กรุงเทพมหานคร|premium|2564","สมุทรปราการ|premium|2564","นนทบุรี|premium|2564","ปทุมธานี|premium|2564","ชลบุรี|premium|2564","เชียงใหม่|premium|2564","กรุงเทพมหานคร|premium|2565","สมุทรปราการ|premium|2565","นนทบุรี|premium|2565","ปทุมธานี|premium|2565","ชลบุรี|premium|2565","เชียงใหม่|premium|2565","กรุงเทพมหานคร|payments|2555","สมุทรปราการ|payments|2555","นนทบุรี|payments|2555","ชลบุรี|payments|2555","เชียงใหม่|payments|2555","สงขลา|payments|2555","กรุงเทพมหานคร|payments|2556","สมุทรปราการ|payments|2556","นนทบุรี|payments|2556","ชลบุรี|payments|2556","เชียงใหม่|payments|2556","กรุงเทพมหานคร|payments|2557","สมุทรปราการ|payments|2557","นนทบุรี|payments|2557","ชลบุรี|payments|2557","เชียงใหม่|payments|2557","นครราชสีมา|payments|2557","สงขลา|payments|2557","กรุงเทพมหานคร|payments|2558","สมุทรปราการ|payments|2558","นนทบุรี|payments|2558","ปทุมธานี|payments|2558","ชลบุรี|payments|2558","เชียงใหม่|payments|2558","นครราชสีมา|payments|2558","สงขลา|payments|2558","กรุงเทพมหานคร|payments|2559","สมุทรปราการ|payments|2559","นนทบุรี|payments|2559","ชลบุรี|payments|2559","เชียงใหม่|payments|2559","นครราชสีมา|payments|2559","กรุงเทพมหานคร|payments|2560","สมุทรปราการ|payments|2560","นนทบุรี|payments|2560","ปทุมธานี|payments|2560","ชลบุรี|payments|2560","เชียงใหม่|payments|2560","กรุงเทพมหานคร|payments|2561","สมุทรปราการ|payments|2561","นนทบุรี|payments|2561","ปทุมธานี|payments|2561","ชลบุรี|payments|2561","เชียงใหม่|payments|2561","กรุงเทพมหานคร|payments|2562","สมุทรปราการ|payments|2562","นนทบุรี|payments|2562","ปทุมธานี|payments|2562","ชลบุรี|payments|2562","นครปฐม|payments|2562","เชียงใหม่|payments|2562","สงขลา|payments|2562","กรุงเทพมหานคร|payments|2563","สมุทรปราการ|payments|2563","นนทบุรี|payments|2563","ปทุมธานี|payments|2563","ชลบุรี|payments|2563","นครปฐม|payments|2563","เชียงใหม่|payments|2563","กรุงเทพมหานคร|payments|2564","สมุทรปราการ|payments|2564","นนทบุรี|payments|2564","ปทุมธานี|payments|2564","ชลบุรี|payments|2564","เชียงใหม่|payments|2564","กรุงเทพมหานคร|payments|2565","สมุทรปราการ|payments|2565","นนทบุรี|payments|2565","ปทุมธานี|payments|2565","ชลบุรี|payments|2565","เชียงใหม่|payments|2565"],"issues":[{"id":"ISS-001","type":"ข้อมูลซ้ำ (Exact Duplicates)","n":4,"fix":"ลบแถวที่ซ้ำแบบตรงกันทั้ง 14 คอลัมน์ โดยเก็บแถวแรกไว้","note":"ชีตข้อมูลดิบยังคงเดิม; การตัดแถวมีผลเฉพาะ Cleaned_Data และ Dashboard_Data"},{"id":"ISS-002","type":"หน่วยปี 2565 ไม่สอดคล้อง","n":246,"fix":"หารค่าปี 2565 ด้วย 1,000 สำหรับ SUM_INSURED, PREMIUM_RECEIVED และ POLICY_PAYMENTS; ไม่ปรับจำนวนกรมธรรม์","note":"ควรตรวจยืนยันกับแหล่งเผยแพร่ต้นฉบับก่อนใช้อ้างอิงภายนอก; ไฟล์ดิบไม่ถูกเขียนทับ"},{"id":"ISS-003","type":"จำนวนกรมธรรม์มีทศนิยม","n":81,"fix":"ปัดเป็นจำนวนเต็มที่ใกล้ที่สุด (nearest whole number) เฉพาะตัวชี้วัด POLICY_COUNT ปี 2564","note":"ถ้าต้นทางตั้งใจนำเสนอค่าเฉลี่ย/ประมาณการ ควรตรวจสอบนิยามกับผู้เผยแพร่"},{"id":"ISS-004","type":"ค่าภาคผิดรูปแบบ","n":1,"fix":"จัดระดับพื้นที่ในข้อมูลสะอาดเป็นจังหวัดสงขลา และสืบทอดภาคจากหัวกลุ่มก่อนหน้า","note":"เก็บต้นฉบับไว้ในชีต ข้อมูล; ไม่แก้เซลล์ต้นฉบับ"},{"id":"ISS-005","type":"ช่องว่างจากรูปแบบจัดกลุ่ม","n":575,"fix":"ขยายชื่อภาค/พื้นที่ไปยังแต่ละระเบียนตามขอบเขตกลุ่ม; ไม่เติมค่าตัวเลข","note":"province เป็น null โดยตั้งใจสำหรับระเบียนระดับประเทศและระดับภาค"},{"id":"ISS-006","type":"แถวว่าง","n":4,"fix":"ไม่รวมแถวว่างในตาราง Cleaned_Data และ Dashboard_Data","note":"ข้อมูลดิบเก็บไว้เพื่ออ้างอิงรูปแบบต้นฉบับ"},{"id":"ISS-007","type":"ข้อความมีช่องว่างนำหน้า","n":1,"fix":"ตัดช่องว่างส่วนเกินในข้อความแหล่งที่มาที่นำไปแสดงใน Summary","note":"คงข้อความต้นฉบับไว้ในชีต ข้อมูล"},{"id":"ISS-008","type":"ค่าที่ติดธงจากการตรวจ IQR","n":300,"fix":"แยกตรวจตามตัวชี้วัดและปี โดยคำนวณเฉพาะระดับจังหวัด; ไม่รวมยอดระดับภาค/ประเทศ","note":"ควรตรวจบริบทกับแหล่งข้อมูลก่อนตัดสินใจปรับค่า; ไม่ใช้การลบ outlier อัตโนมัติ"}],"stats":{"records":3608,"areas":82,"dups":4,"unitFix2565":246,"rounded2564":81,"iqr":300,"maxTotalDiff":"0.18%"},"dict":{"fields":[{"f":"record_key","d":"คีย์เฉพาะของแต่ละระเบียน ประกอบด้วย area_key + year + metric_code","t":"Text","u":"Unique / Primary Key","ex":"COUNTRY|ทั่วราชอาณาจักร|2555|POLICY_COUNT","rule":"ต้องไม่ซ้ำใน Dashboard_Data","role":"Primary Key"},{"f":"area_key","d":"รหัสเชิงเทคนิคของพื้นที่ สร้างจากระดับพื้นที่และชื่อพื้นที่","t":"Text","u":"Unique ต่อพื้นที่","ex":"COUNTRY|ทั่วราชอาณาจักร","rule":"ใช้เชื่อมระเบียนปี/ตัวชี้วัดของพื้นที่เดียวกัน","role":"Key"},{"f":"area_type","d":"ระดับของพื้นที่","t":"Category","u":"country, region, province","ex":"country","rule":"ใช้กรองเพื่อไม่ให้รวมยอดระดับประเทศ/ภาค/จังหวัดซ้ำกัน","role":"Dimension"},{"f":"region","d":"ชื่อภาคหรือกลุ่มพื้นที่","t":"Category / Text","u":"ทั่วราชอาณาจักร, กรุงเทพมหานคร, ภาคกลาง, ภาคเหนือ, ภาคตะวันออกเฉียงเหนือ, ภาคใต้","ex":"ทั่วราชอาณาจักร","rule":"ข้อมูลระดับจังหวัดสืบทอดจากหัวกลุ่ม; กรุงเทพฯ แยกเป็นกลุ่มของตนเอง","role":"Dimension"},{"f":"province","d":"ชื่อจังหวัด","t":"Text","u":"ชื่อจังหวัดภาษาไทย; null สำหรับระดับประเทศ/ภาค","ex":"(null)","rule":"null หมายถึงไม่เกี่ยวข้องกับระดับพื้นที่นั้น ไม่ใช่ข้อมูลสูญหาย","role":"Dimension"},{"f":"area_name","d":"ชื่อพื้นที่ที่ใช้แสดงผล ไม่ว่าจะเป็นประเทศ ภาค หรือจังหวัด","t":"Text","u":"ข้อความ","ex":"ทั่วราชอาณาจักร","rule":"ใช้เป็น label ในกราฟและตัวกรอง","role":"Dimension"},{"f":"year","d":"ปีข้อมูล","t":"Integer","u":"พ.ศ. 2555–2565","ex":"2555","rule":"เก็บเป็นเลข พ.ศ. ไม่ใช่ Date","role":"Time Dimension"},{"f":"metric_code","d":"รหัสตัวชี้วัดแบบมาตรฐานสำหรับใช้ในโค้ด","t":"Category","u":"POLICY_COUNT, SUM_INSURED, PREMIUM_RECEIVED, POLICY_PAYMENTS","ex":"POLICY_COUNT","rule":"ค่าคงที่ ห้ามเปลี่ยนชื่อโดยไม่ปรับระบบเว็บไซต์","role":"Dimension"},{"f":"metric_name","d":"ชื่อตัวชี้วัดภาษาไทย","t":"Text / Category","u":"4 ตัวชี้วัดตาม Data Dictionary ด้านล่าง","ex":"จำนวนกรมธรรม์ที่มีผลบังคับเมื่อสิ้นปี","rule":"ใช้แสดงป้ายกำกับภาษาไทยบน Dashboard","role":"Dimension"},{"f":"value","d":"ค่าตัวเลขของตัวชี้วัด","t":"Number","u":"ราย หรือ พันบาท ตาม unit","ex":"20473865","rule":"จำนวนกรมธรรม์เป็นจำนวนเต็ม; จำนวนเงินเป็นตัวเลขที่อาจมีทศนิยม","role":"Measure"},{"f":"unit","d":"หน่วยของค่าตัวเลข","t":"Category","u":"ราย, พันบาท","ex":"ราย","rule":"ต้องแสดงหน่วยกำกับ KPI/แกนกราฟเสมอ","role":"Measure Metadata"},{"f":"source_row","d":"เลขแถวต้นทางในชีต ข้อมูล","t":"Integer","u":"เลขแถว Excel","ex":"5","rule":"ใช้ตรวจสอบย้อนกลับ; แถวต้นทางถูกเก็บไว้เดิม","role":"Lineage"},{"f":"นิยามตัวชี้วัด (Metric Definitions)","d":null,"t":null,"u":null,"ex":null,"rule":null,"role":null}],"metrics":[{"c":"POLICY_COUNT","n":"จำนวนกรมธรรม์ที่มีผลบังคับเมื่อสิ้นปี","u":"ราย","d":"จำนวนกรมธรรม์ที่มีผลบังคับ ณ สิ้นปี"},{"c":"SUM_INSURED","n":"จำนวนเงินเอาประกันที่มีผลบังคับเมื่อสิ้นปี","u":"พันบาท","d":"มูลค่าเงินเอาประกันที่มีผลบังคับ ณ สิ้นปี"},{"c":"PREMIUM_RECEIVED","n":"เบี้ยประกันภัยรับทั้งสิ้น","u":"พันบาท","d":"จำนวนเบี้ยประกันภัยรับรวม"},{"c":"POLICY_PAYMENTS","n":"เงินที่จ่ายตามกรมธรรม์","u":"พันบาท","d":"จำนวนเงินที่จ่ายตามกรมธรรม์"}],"caution":"ข้อควรระวัง: หากนำ Dashboard_Data ไปคำนวณยอดรวมทั่วประเทศหรือรายภาค ให้เลือก area_type เพียงระดับเดียว และอย่ารวม country + region + province ในการคำนวณเดียวกัน"},"steps":[{"n":1,"s":"สำรองข้อมูลต้นฉบับ","m":"คงชีต ข้อมูล ไว้ใน workbook โดยไม่เขียนทับ","c":"ใช้แถว 5–336 เป็นข้อมูลหลัก; แถว 4 เป็น header","o":"มีทั้งข้อมูลดิบและข้อมูลสะอาดในไฟล์เดียว","v":"เทียบกับไฟล์ต้นฉบับ; ไม่แก้ทับ"},{"n":2,"s":"ตรวจสอบข้อมูลซ้ำ","m":"เปรียบเทียบค่าทั้ง 14 คอลัมน์ของแต่ละแถว","c":"ลบเฉพาะแถวที่ซ้ำครบทุกช่อง; เก็บแถวแรก","o":"ลบรายการซ้ำ 4 แถว","v":"เหลือ 328 records"},{"n":3,"s":"จัดโครงสร้างพื้นที่","m":"อ่านข้อความภาค/จังหวัดตามหัวกลุ่มและชื่อจังหวัด","c":"สืบทอดชื่อภาค/พื้นที่ให้แต่ละแถวตามลำดับกลุ่ม","o":"82 พื้นที่ มี 4 ตัวชี้วัดต่อพื้นที่","v":"ตรวจ metric coverage = 4/area"},{"n":4,"s":"แก้ชื่อภาคผิดรูปแบบ","m":"ตรวจสอบค่า A309='82' ในกลุ่มจังหวัดสงขลา","c":"ใช้หัวกลุ่มก่อนหน้า 'ภาคใต้' แทนในข้อมูลสะอาด","o":"สงขลาถูกจัดอยู่ในภาคใต้","v":"ชีตดิบยังคงค่าเดิม"},{"n":5,"s":"ปรับหน่วยปี 2565","m":"ปรับเฉพาะตัวชี้วัดทางการเงินในปี 2565","c":"value ÷ 1,000; จำนวนกรมธรรม์ไม่เปลี่ยน","o":"ปรับ 246 cells เป็นหน่วยพันบาท","v":"ตรวจแนวโน้มเทียบปี 2564 และยอดกลุ่ม"},{"n":6,"s":"แก้ชนิดข้อมูลจำนวนกรมธรรม์","m":"ตรวจค่าปี 2564 ในตัวชี้วัด POLICY_COUNT","c":"ปัดค่าทศนิยมเป็นจำนวนเต็มที่ใกล้ที่สุด","o":"ปรับ 81 values; จำนวนกรมธรรม์เป็น Integer","v":"ตรวจว่าไม่เหลือเศษทศนิยมในฟิลด์นี้"},{"n":7,"s":"จัดการแถวว่าง/ช่องว่างโครงสร้าง","m":"ไม่นำแถวว่าง 3, 337–339 เข้าตาราง; เติม label ตาม hierarchy","c":"ไม่เติมค่าตัวเลขที่หาย; province null เฉพาะระดับประเทศ/ภาค","o":"ข้อมูลสะอาดไม่มี missing ในฟิลด์หลัก","v":"ตรวจ missing และ negative values"},{"n":8,"s":"ตรวจค่าวิพากษ์ด้วย IQR","m":"คำนวณ Q1, Q3 และ IQR แยกตามตัวชี้วัด/ปี เฉพาะ 77 จังหวัด","c":"ติดธงเมื่อค่าต่ำกว่า Q1−1.5×IQR หรือสูงกว่า Q3+1.5×IQR","o":"พบ 300 จุด; เก็บไว้ ไม่ลบอัตโนมัติ","v":"รายละเอียดและขอบเขตอยู่ในชีต IQR_Screening"},{"n":9,"s":"แปลงข้อมูลเป็น Dashboard Long Format","m":"แตกแต่ละตัวชี้วัดเป็นหนึ่งระเบียนต่อปีและพื้นที่","c":"หนึ่ง record = area_key × year × metric_code","o":"ได้ 3,608 rows; 12 fields","v":"record_key ไม่ซ้ำ"},{"n":10,"s":"ส่งออกและจัดทำพจนานุกรม","m":"สร้าง Cleaned_Data, Dashboard_Data, Issue_Log, Summary และ Data_Dictionary","c":"เก็บ source_row เพื่อ trace กลับแถวต้นทาง","o":"พร้อมใช้งานใน Excel และเว็บไซต์","v":"ตรวจ sample ranges และจำนวนแถว"}]};
+</script>
+
+<script>
+/* geo — รูปร่างภาคโดยประมาณ (lon, lat) */
+window.GEO = (() => {
+  const J1=[99.15,17.4], J2=[101.1,17.65], J3=[99.97,13.3], J4=[101.75,14.3],
+        J5=[102.9,14.35], J6=[100.9,13.45], A0=[97.8,17.55], W1=[99.5,11.0], W2=[99.1,11.0],
+        T1=[98.4,15.4], T2=[101.6,15.4];
+  const rev = a => a.slice().reverse();
+  const chain = (...ps) => { const out = []; ps.forEach(p => p.forEach(pt => { const l = out[out.length-1]; if (l && l[0]===pt[0] && l[1]===pt[1]) return; out.push(pt); })); const f = out[0], l = out[out.length-1]; if (f[0]===l[0] && f[1]===l[1]) out.pop(); return out; };
+  const B_NE_N  = [J2,[101.2,17.0],[101.4,16.5],[101.8,15.9],T2];
+  const B_NE_CE = [T2,[101.5,14.6],J4];
+  const B_N_CE  = [T1,[98.8,15.5],[99.15,15.6],[99.4,15.1],[99.8,15.05],[100.2,15.2],[100.7,15.35],[101.1,15.5],T2];
+  const B_NeE   = [J4,[102.4,14.2],J5];
+  const laosN = [[99.85,20.43],[100.1,20.35],[100.4,20.3],[100.6,19.9],[100.9,19.6],[101.2,19.4],[101.15,18.4],[101.0,17.9],J2];
+  const mmN   = [[99.85,20.43],[99.4,20.1],[98.9,19.75],[98.5,19.7],[98.1,19.8],[97.8,19.2],[97.35,18.5],[97.6,17.9],A0,[98.1,16.9],[98.6,16.5],[98.7,16.0],T1];
+  const outerNE = [J2,[101.35,17.8],[101.67,17.9],[102.1,17.95],[102.7,17.88],[103.1,18.2],[103.65,18.35],[104.2,17.95],[104.75,17.4],[104.7,16.6],[105.2,16.1],[105.6,15.6],[105.5,15.0],[105.2,14.4],[104.2,14.35],[103.2,14.35],J5];
+  const borderE = [J5,[102.6,14.0],[102.5,13.6],[102.35,12.4],[102.95,11.7],[102.9,11.55]];
+  const coastE  = [[102.9,11.55],[102.4,11.95],[101.9,12.5],[101.3,12.65],[100.95,13.2],J6];
+  const coastC  = [J6,[100.6,13.55],[100.3,13.5],J3];
+  const coastW  = [J3,[100.1,13.0],[99.95,12.7],[99.8,11.9],[99.6,11.4],W1];
+  const mmCE    = [T1,[98.45,14.7],[98.95,14.0],[99.2,13.4],[99.35,12.7],[99.45,12.0],[99.3,11.5],W2];
+  const coastS  = [W1,[99.2,10.4],[99.3,9.8],[99.6,9.4],[99.9,9.0],[100.1,8.5],[100.4,7.9],[100.55,7.3],[100.95,7.1],[101.35,6.9],[101.9,6.4],[102.1,6.25]];
+  const malay   = [[102.1,6.25],[101.9,6.1],[101.45,5.9],[101.1,5.65],[101.0,6.2],[100.65,6.45],[100.4,6.5],[100.15,6.5]];
+  const andaman = [[100.15,6.5],[99.85,6.9],[99.5,7.3],[99.2,7.8],[98.8,8.0],[98.35,7.8],[98.3,8.2],[98.45,9.2],[98.6,9.9]];
+  const mmS     = [[98.6,9.9],[98.75,10.5],[98.9,10.9],W2];
+  return {
+    bkk: [0,1,2,3,4,5,6,7,8,9].map(k => { const t = (18 + k*36) * Math.PI/180; return [100.6 + 0.30*Math.cos(t), 13.84 + 0.25*Math.sin(t)]; }),
+    north:     chain(mmN, B_N_CE, rev(B_NE_N), rev(laosN)),
+    northeast: chain(outerNE, rev(B_NeE), rev(B_NE_CE), rev(B_NE_N)),
+    central:   chain(mmCE, [W2,W1], rev(coastW), rev(coastC), rev(coastE), rev(borderE), rev(B_NeE), rev(B_NE_CE), rev(B_N_CE)),
+    south:     chain([W2], coastS, malay, andaman, mmS)
+  };
+})();
+</script>
+
+<script>
+/* =====================================================================
+   app — แผนที่ 3 มิติ (canvas) + แดชบอร์ด 2 มิติ (SVG/HTML) ไม่ใช้ไลบรารีภายนอก
+   ===================================================================== */
+(() => {
+'use strict';
+const C = window.CONFIG, D = window.DATA, GEO = window.GEO;
+const $ = id => document.getElementById(id);
+const nf0 = new Intl.NumberFormat('th-TH', { maximumFractionDigits: 0 });
+const nf1 = new Intl.NumberFormat('th-TH', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+const nf2 = new Intl.NumberFormat('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const isNum = v => typeof v === 'number' && isFinite(v);
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- พื้นที่ ---------- */
+const REG = [
+  { id: 'bkk',       name: 'กรุงเทพมหานคร',         label: 'กรุงเทพฯ',  tab: 'กทม.',  color: '#e0607e', anchor: [100.6, 13.84], ldx: -92, ldy: 18 },
+  { id: 'central',   name: 'ภาคกลาง',               label: 'ภาคกลาง',   tab: 'กลาง',  color: '#4c8fd6', anchor: [101.9, 13.1], ldx: 44, ldy: 34 },
+  { id: 'north',     name: 'ภาคเหนือ',              label: 'ภาคเหนือ',  tab: 'เหนือ', color: '#4fae7b', anchor: [99.7, 18.2] },
+  { id: 'northeast', name: 'ภาคตะวันออกเฉียงเหนือ', label: 'ภาคอีสาน',  tab: 'อีสาน', color: '#e0a63a', anchor: [103.3, 16.2] },
+  { id: 'south',     name: 'ภาคใต้',                label: 'ภาคใต้',    tab: 'ใต้',   color: '#22a5a0', anchor: [99.45, 8.75] }
+];
+const NAT = { id: 'all', name: 'ทั่วราชอาณาจักร', label: 'ทั้งประเทศ', tab: 'ทั้งประเทศ', color: '#4f46e5' };
+const regById = id => id === 'all' ? NAT : REG.find(r => r.id === id);
+const PROVINCES = {
+  bkk: ['กรุงเทพมหานคร'],
+  central: ['สมุทรปราการ','นนทบุรี','ปทุมธานี','พระนครศรีอยุธยา','อ่างทอง','ลพบุรี','สิงห์บุรี','ชัยนาท','สระบุรี','ชลบุรี','ระยอง','จันทบุรี','ตราด','ฉะเชิงเทรา','ปราจีนบุรี','นครนายก','สระแก้ว','ราชบุรี','กาญจนบุรี','สุพรรณบุรี','นครปฐม','สมุทรสาคร','สมุทรสงคราม','เพชรบุรี','ประจวบคีรีขันธ์'],
+  north: ['เชียงใหม่','ลำพูน','ลำปาง','อุตรดิตถ์','แพร่','น่าน','พะเยา','เชียงราย','แม่ฮ่องสอน','นครสวรรค์','อุทัยธานี','กำแพงเพชร','ตาก','สุโขทัย','พิษณุโลก','พิจิตร','เพชรบูรณ์'],
+  northeast: ['นครราชสีมา','บุรีรัมย์','สุรินทร์','ศรีสะเกษ','อุบลราชธานี','ยโสธร','ชัยภูมิ','อำนาจเจริญ','บึงกาฬ','หนองบัวลำภู','ขอนแก่น','อุดรธานี','เลย','หนองคาย','มหาสารคาม','ร้อยเอ็ด','กาฬสินธุ์','สกลนคร','นครพนม','มุกดาหาร'],
+  south: ['นครศรีธรรมราช','กระบี่','พังงา','ภูเก็ต','สุราษฎร์ธานี','ระนอง','ชุมพร','สงขลา','สตูล','ตรัง','พัทลุง','ปัตตานี','ยะลา','นราธิวาส']
+};
+const ALLPROV = REG.flatMap(r => PROVINCES[r.id]);
+const PROV_REG = {}; REG.forEach(r => PROVINCES[r.id].forEach(p => PROV_REG[p] = r.id));
+
+/* ---------- ตัวชี้วัด ---------- */
+const M = {
+  premium:  { label: 'เบี้ยประกันภัยรับทั้งสิ้น',               short: 'เบี้ยประกันภัย', money: true },
+  policies: { label: 'จำนวนกรมธรรม์ที่มีผลบังคับ ณ สิ้นปี',     short: 'กรมธรรม์' },
+  sum:      { label: 'จำนวนเงินเอาประกันที่มีผลบังคับ ณ สิ้นปี', short: 'ทุนประกัน', money: true },
+  payments: { label: 'เงินที่จ่ายตามกรมธรรม์',                  short: 'เงินจ่าย', money: true }
+};
+const MKEYS = Object.keys(M);
+const unit = m => M[m].money ? 'บาท' : 'ราย';
+function fmtV(v, m, bare) {
+  if (!isNum(v)) return '–';
+  let s;
+  s = nf0.format(Math.round(v));
+  return bare ? s : s + ' ' + unit(m);
+}
+function fmtC(v, m, bare) {   // เลขย่อ (หน้าแรก): เงิน = ล้านบาท
+  if (!isNum(v)) return '–';
+  if (!M[m].money) return fmtV(v, m, bare);
+  const x = v / 1e6, s = Math.abs(x) >= 100 ? nf0.format(x) : Math.abs(x) >= 1 ? nf1.format(x) : nf2.format(x);
+  return bare ? s : s + ' ล้านบาท';
+}
+const unitC = m => M[m].money ? 'ล้านบาท' : 'ราย';
+const fpct = (x, sign) => !isNum(x) ? '–' : (sign && x > 0 ? '+' : '') + (x * 100).toFixed(1) + '%';
+const ratio = (a, b) => isNum(a) && isNum(b) && b ? a / b : null;
+const chg = (v1, v0) => isNum(v1) && isNum(v0) && v0 ? v1 / v0 - 1 : null;
+const arrow = d => !isNum(d) ? '' : d > 0 ? '▲' : d < 0 ? '▼' : '■';
+
+/* ---------- เข้าถึงข้อมูล ---------- */
+const YEARS = D.years, YI = {}; YEARS.forEach((y, i) => YI[y] = i);
+const MI = {}; D.metrics.forEach((m, i) => MI[m] = i);
+const conv = (v, m) => isNum(v) ? (M[m].money ? v * 1000 : v) : null;      // พันบาท → บาท
+const val = (y, p, m) => { const a = D.prov[p]; return a && a[YI[y]] ? conv(a[YI[y]][MI[m]], m) : null; };
+const regVal = (r, y, m) => { const a = D.official[r]; return a && a[YI[y]] ? conv(a[YI[y]][MI[m]], m) : null; };
+const provsOf = r => r === 'all' ? ALLPROV : PROVINCES[r];
+const IQR = new Set(D.iqr);
+
+/* ---------- สถานะ ---------- */
+const st = { year: YEARS[YEARS.length - 1], metric: 'premium', region: null, prov: null, showAll: false, sort: { k: 'v', d: -1 }, q: '', gr: 'base', cmp: 'total', tv: 'dash', ab: 'find', aboutOn: false };
+const Y0 = YEARS[0], YL = YEARS[YEARS.length - 1];
+const prevY = () => YI[st.year] > 0 ? YEARS[YI[st.year] - 1] : null;
+const baseCmp = () => st.year === Y0 ? YL : st.year;
+const scopeVal = (y, m = st.metric) => st.prov ? val(y, st.prov, m) : regVal(st.region, y, m);
+
+/* =====================================================================
+   1) แผนที่ 3 มิติ — เริ่มเป็นสีขาวทั้งหมด เปลี่ยนสีเมื่อชี้หรือคลิก
+   ===================================================================== */
+const D2R = Math.PI / 180, COSL = Math.cos(13.5 * D2R), PERSP = 34;
+const toW = ([lo, la]) => [(lo - 101) * COSL, la - 13.5];
+const hex = h => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
+const mix = (a, b, t) => a.map((v, i) => v + (b[i] - v) * t);
+const rgb = (c, k = 1) => `rgb(${c.map(v => clamp(Math.round(v * k), 0, 255)).join(',')})`;
+const WHITE = hex('#ffffff'), WALL = hex('#dfe4ec');
+
+const MAPR = REG.map(m => {
+  let poly = GEO[m.id].map(toW), a = 0;
+  for (let i = 0; i < poly.length; i++) { const p = poly[i], q = poly[(i + 1) % poly.length]; a += p[0] * q[1] - q[0] * p[1]; }
+  if (a < 0) poly = poly.reverse();
+  const xs = poly.map(p => p[0]), ys = poly.map(p => p[1]);
+  return Object.assign({}, m, { poly, rgb: hex(m.color), cx: (Math.min(...xs) + Math.max(...xs)) / 2, cy: (Math.min(...ys) + Math.max(...ys)) / 2,
+    bbox: [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)], aw: toW(m.anchor), h: 0.02, ht: 0.3, z0: 0, hov: 0, hit: null, v: null });
+});
+const MB = MAPR.find(r => r.id === 'bkk'), MC = MAPR.find(r => r.id === 'central');
+const canvas = $('map'), ctx = canvas.getContext('2d');
+let W = 0, H = 0, DPR = 1, BASE = 50, hover = null, focusR = null, raf = 0, drawOrder = MAPR;
+const HOME = { yaw: -12 * D2R, tilt: 50 * D2R, zoom: 1, fx: 0.45, fy: -0.5 };
+const cam = Object.assign({ cx: 0, cy: 0 }, HOME), tgt = Object.assign({}, cam);
+const userView = { yaw: HOME.yaw, tilt: HOME.tilt, zoom: 1 };
+const FONT = () => getComputedStyle(document.body).fontFamily;
+
+function project(x, y, z) {
+  x -= cam.fx; y -= cam.fy;
+  const c = Math.cos(cam.yaw), s = Math.sin(cam.yaw);
+  const x1 = x * c - y * s, y1 = x * s + y * c;
+  const ct = Math.cos(cam.tilt), sn = Math.sin(cam.tilt);
+  const up = y1 * ct + z * sn, depth = -y1 * sn + z * ct;
+  const S = BASE * cam.zoom * PERSP / (PERSP - depth);
+  return [cam.cx + x1 * S, cam.cy - up * S, depth];
+}
+const freeArea = () => W < 860 ? { x: 0, y: 120, w: W, h: H * 0.56 - 120 } : { x: 0, y: 120, w: W - 364, h: H - 190 };
+function frameHome() {
+  const fa = freeArea();
+  tgt.cx = fa.x + fa.w / 2; tgt.cy = fa.y + fa.h / 2 + 10;
+  Object.assign(tgt, { fx: HOME.fx, fy: HOME.fy, yaw: userView.yaw, tilt: userView.tilt, zoom: userView.zoom });
+}
+function frameRegion(r) {
+  const [x0, y0, x1, y1] = r.bbox;
+  Object.assign(tgt, { fx: (x0 + x1) / 2, fy: (y0 + y1) / 2, yaw: -6 * D2R, tilt: 54 * D2R, cx: W / 2, cy: H / 2 });
+  tgt.zoom = clamp(Math.min(W * 0.6 / ((x1 - x0) * BASE), H * 0.6 / ((y1 - y0) * Math.cos(54 * D2R) * BASE + BASE)), 1, 4);
+}
+function resize() {
+  DPR = Math.min(devicePixelRatio || 1, 2);
+  W = canvas.clientWidth; H = canvas.clientHeight;
+  canvas.width = Math.round(W * DPR); canvas.height = Math.round(H * DPR);
+  const fa = freeArea();
+  BASE = Math.min(fa.w * 0.9 / 8.6, fa.h * 0.92 / (14.8 * Math.cos(HOME.tilt) + 1.8));
+  if (!st.region) { frameHome(); if (!cam.cx) Object.assign(cam, tgt); }
+  kick();
+}
+function setHeights() {
+  const vals = MAPR.map(r => regVal(r.id, st.year, st.metric));
+  const mx = Math.max(1, ...vals.filter(isNum));
+  MAPR.forEach((r, i) => { r.v = vals[i]; r.ht = isNum(vals[i]) ? 0.12 + 0.72 * vals[i] / mx : 0.05; });
+  kick();
+}
+const pathPts = pts => { ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.closePath(); };
+const rr = (x, y, w, h, r) => { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); };
+
+function draw() {
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0); ctx.clearRect(0, 0, W, H);
+  const order = MAPR.slice().sort((a, b) => project(a.cx, a.cy, 0)[2] - project(b.cx, b.cy, 0)[2]);
+  order.splice(order.indexOf(MB), 1); order.push(MB);
+  drawOrder = order;
+  ctx.save(); ctx.shadowColor = 'rgba(30,41,82,.16)'; ctx.shadowBlur = 34 * DPR; ctx.shadowOffsetY = 18 * DPR; ctx.fillStyle = '#e6eaf2';
+  for (const r of order) if (r !== MB) { pathPts(r.poly.map(p => project(p[0], p[1], 0))); ctx.fill(); }
+  ctx.restore();
+  const cy = Math.cos(cam.yaw), sy = Math.sin(cam.yaw);
+  for (const r of order) {
+    const t = r.hov;
+    const topC = mix(WHITE, mix(WHITE, r.rgb, 0.62), t), sideC = mix(WALL, mix(r.rgb, WHITE, 0.08), t);
+    const top = r.poly.map(p => project(p[0], p[1], r.z0 + r.h)), bot = r.poly.map(p => project(p[0], p[1], r.z0));
+    const walls = [];
+    for (let i = 0, n = r.poly.length; i < n; i++) {
+      const j = (i + 1) % n, a = r.poly[i], b = r.poly[j], dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy) || 1;
+      const nx = dy / L, ny = -dx / L, ry = nx * sy + ny * cy, rx = nx * cy - ny * sy;
+      if (ry > -0.001) continue;
+      walls.push({ q: [top[i], top[j], bot[j], bot[i]], k: clamp(0.88 + 0.12 * (-ry) - 0.1 * rx, 0.74, 1.04), d: (top[i][2] + top[j][2]) / 2 });
+    }
+    walls.sort((a, b) => a.d - b.d);
+    for (const w of walls) { pathPts(w.q); const c = rgb(sideC, w.k); ctx.fillStyle = c; ctx.fill(); ctx.strokeStyle = c; ctx.lineWidth = .7; ctx.stroke(); }
+    pathPts(top); ctx.fillStyle = rgb(topC); ctx.fill();
+    ctx.strokeStyle = t > 0.4 ? '#ffffff' : '#d3d9e4'; ctx.lineWidth = 1.3; ctx.lineJoin = 'round'; ctx.stroke();
+    r.hit = { top, walls: walls.map(w => w.q) };
+  }
+  const small = W < 860, nat = regVal('all', st.year, st.metric), font = FONT();
+  for (const r of order) {
+    const p = project(r.aw[0], r.aw[1], r.z0 + r.h);
+    const l1 = r.label, l2 = fmtC(r.v, st.metric), l3 = isNum(r.v) && nat ? fpct(r.v / nat) + ' ของประเทศ' : '';
+    ctx.font = `600 ${small ? 11 : 13}px ${font}`; const w1 = ctx.measureText(l1).width;
+    ctx.font = `400 11px ${font}`; const w2 = small ? 0 : Math.max(ctx.measureText(l2).width, ctx.measureText(l3).width);
+    const sk = small ? 0.5 : 1, bw = Math.max(w1 + 16, w2) + 20, bh = small ? 24 : 52, bx = p[0] - bw / 2 + (r.ldx || 0) * sk, by = p[1] - bh - 14 + (r.ldy || 0) * sk;
+    ctx.globalAlpha = hover && hover !== r ? 0.5 : 1;
+    ctx.strokeStyle = 'rgba(15,23,42,.3)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(clamp(p[0], bx + 10, bx + bw - 10), by + bh); ctx.lineTo(p[0], p[1]); ctx.stroke();
+    ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(p[0], p[1], 2.5, 0, 6.283); ctx.fill(); ctx.stroke();
+    ctx.save(); ctx.shadowColor = 'rgba(15,23,42,.12)'; ctx.shadowBlur = 12 * DPR; ctx.shadowOffsetY = 3 * DPR;
+    rr(bx, by, bw, bh, 10); ctx.fillStyle = '#fff'; ctx.fill(); ctx.restore();
+    ctx.fillStyle = rgb(mix(hex('#cbd5e1'), r.rgb, r.hov)); ctx.beginPath(); ctx.arc(bx + 13, by + (small ? 12 : 16), 4, 0, 6.283); ctx.fill();
+    ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+    ctx.font = `600 ${small ? 11 : 13}px ${font}`; ctx.fillStyle = '#0f172a'; ctx.fillText(l1, bx + 22, by + (small ? 16 : 20));
+    if (!small) { ctx.font = `400 11px ${font}`; ctx.fillStyle = '#475569'; ctx.fillText(l2, bx + 10, by + 35); ctx.fillStyle = '#94a3b8'; ctx.fillText(l3, bx + 10, by + 47); }
+    ctx.globalAlpha = 1;
+  }
+}
+function tick() {
+  raf = 0;
+  const k = reduceMotion ? 1 : 0.16;
+  let busy = false;
+  for (const key of ['yaw', 'tilt', 'zoom', 'fx', 'fy', 'cx', 'cy']) {
+    const d = tgt[key] - cam[key], eps = key === 'cx' || key === 'cy' ? 0.1 : 0.0005;
+    if (Math.abs(d) > eps) { cam[key] += d * k; busy = true; } else cam[key] = tgt[key];
+  }
+  for (const r of MAPR) {
+    const on = hover === r || focusR === r;
+    for (const [key, t] of [['h', r.ht + (on ? 0.1 : 0)], ['z0', r === MB ? MC.h : 0], ['hov', on ? 1 : 0]]) {
+      const d = t - r[key]; if (Math.abs(d) > 0.001) { r[key] += d * (reduceMotion ? 1 : 0.15); busy = true; } else r[key] = t;
+    }
+  }
+  if (!document.body.classList.contains('open') || busy) draw();
+  if (busy) kick();
+}
+const kick = () => { if (!raf) raf = requestAnimationFrame(tick); };
+function inPoly(x, y, pts) { let ins = false; for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) { const a = pts[i], b = pts[j]; if ((a[1] > y) !== (b[1] > y) && x < (b[0] - a[0]) * (y - a[1]) / (b[1] - a[1]) + a[0]) ins = !ins; } return ins; }
+function pick(x, y) { for (let i = drawOrder.length - 1; i >= 0; i--) { const r = drawOrder[i]; if (r.hit && (inPoly(x, y, r.hit.top) || r.hit.walls.some(q => inPoly(x, y, q)))) return r; } return null; }
+
+const tip = $('tip');
+function showTip(html, x, y) {
+  if (!html) { tip.classList.remove('on'); return; }
+  tip.innerHTML = html;
+  const tw = tip.offsetWidth, th = tip.offsetHeight;
+  tip.style.left = clamp(x + 14, 8, innerWidth - tw - 8) + 'px'; tip.style.top = clamp(y + 16, 8, innerHeight - th - 8) + 'px';
+  tip.classList.add('on');
+}
+const tipH = (t, lines) => `<b>${esc(t)}</b>` + lines.filter(Boolean).map(l => `<span>${l}</span>`).join('');
+function regionTip(id) {
+  const r = regById(id), m = st.metric, v = regVal(id, st.year, m), nat = regVal('all', st.year, m), py = prevY();
+  const ranks = REG.map(o => regVal(o.id, st.year, m)).filter(isNum).sort((a, b) => b - a);
+  return tipH(r.name, [`${M[m].short} พ.ศ. ${st.year}: ${fmtV(v, m)}`, nat ? `${fpct(ratio(v, nat))} ของทั้งประเทศ` : '',
+    py ? `เทียบปี ${py}: ${fpct(chg(v, regVal(id, py, m)), true)}` : '', isNum(v) ? `อันดับ ${1 + ranks.filter(o => o > v).length} จาก 5 พื้นที่` : '', 'คลิกเพื่อเปิดแดชบอร์ด']);
+}
+let drag = null;
+const loc = e => { const b = canvas.getBoundingClientRect(); return [e.clientX - b.left, e.clientY - b.top]; };
+canvas.addEventListener('pointerdown', e => { canvas.setPointerCapture(e.pointerId); drag = { x: e.clientX, y: e.clientY, sx: e.clientX, sy: e.clientY, moved: false }; });
+canvas.addEventListener('pointermove', e => {
+  if (drag) {
+    if (Math.hypot(e.clientX - drag.sx, e.clientY - drag.sy) > 5) drag.moved = true;
+    if (drag.moved) {
+      userView.yaw = clamp(userView.yaw + (e.clientX - drag.x) * 0.25 * D2R, -40 * D2R, 40 * D2R);
+      userView.tilt = clamp(userView.tilt - (e.clientY - drag.y) * 0.2 * D2R, 20 * D2R, 66 * D2R);
+      frameHome(); canvas.classList.add('drag'); showTip(null); kick();
+      drag.x = e.clientX; drag.y = e.clientY; return;
+    }
+  }
+  const [x, y] = loc(e), h = pick(x, y);
+  if (h !== hover) { hover = h; kick(); highlightRank(h && h.id); }
+  canvas.classList.toggle('hov', !!h);
+  showTip(h ? regionTip(h.id) : null, e.clientX, e.clientY);
+});
+canvas.addEventListener('pointerup', e => {
+  const click = drag && !drag.moved; drag = null; canvas.classList.remove('drag');
+  if (!click) return;
+  const [x, y] = loc(e), r = pick(x, y); if (r) openScope(r.id);
+});
+canvas.addEventListener('pointerleave', () => { if (!drag) { hover = null; kick(); showTip(null); highlightRank(null); } });
+canvas.addEventListener('wheel', e => { e.preventDefault(); userView.zoom = clamp(userView.zoom * Math.exp(-e.deltaY * 0.001), 0.7, 2.4); frameHome(); kick(); }, { passive: false });
+$('resetView').addEventListener('click', () => { Object.assign(userView, { yaw: HOME.yaw, tilt: HOME.tilt, zoom: 1 }); frameHome(); kick(); });
+
+/* =====================================================================
+   2) หน้าแผนที่: ภาพรวมประเทศ + รายการพื้นที่
+   ===================================================================== */
+const segHTML = (items, cur) => items.map(([v, l, dis]) => `<button type="button" data-v="${esc(v)}" aria-pressed="${String(v) === String(cur)}"${dis ? ' disabled' : ''}>${esc(l)}</button>`).join('');
+function syncControls() {
+  const mItems = MKEYS.map(m => [m, M[m].short]);
+  ['mSeg', 'mSeg2'].forEach(id => $(id).innerHTML = segHTML(mItems, st.metric));
+  document.querySelectorAll('[data-ystep]').forEach(box => {
+    const s = box.querySelector('select');
+    if (!s.options.length) s.innerHTML = YEARS.map(y => `<option value="${y}">พ.ศ. ${y}</option>`).join('');
+    s.value = String(st.year);
+    box.querySelector('[data-step="-1"]').disabled = st.year === Y0;
+    box.querySelector('[data-step="1"]').disabled = st.year === YL;
+  });
+}
+function sparkSVG(series, w, h, selIdx) {
+  const vals = series.filter(isNum); if (vals.length < 2) return '';
+  const mx = Math.max(...vals), mn = Math.min(0, ...vals);
+  const X = i => 4 + (w - 8) * i / (series.length - 1), Y = v => h - 4 - (h - 10) * (v - mn) / (mx - mn || 1);
+  let d = ''; series.forEach((v, i) => { if (isNum(v)) d += (d ? 'L' : 'M') + X(i).toFixed(1) + ',' + Y(v).toFixed(1); });
+  return `<svg viewBox="0 0 ${w} ${h}" width="100%" height="${h}" aria-hidden="true"><path d="${d}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>${isNum(series[selIdx]) ? `<circle cx="${X(selIdx)}" cy="${Y(series[selIdx])}" r="3.5" fill="var(--accent)" stroke="#fff" stroke-width="1.5"/>` : ''}<text x="4" y="${h}" font-size="12" fill="#64748b">${Y0}</text><text x="${w - 4}" y="${h}" font-size="12" fill="#64748b" text-anchor="end">${YL}</text></svg>`;
+}
+function renderLanding() {
+  syncControls();
+  const m = st.metric, nat = regVal('all', st.year, m), py = prevY(), d = py ? chg(nat, regVal('all', py, m)) : null;
+  $('sideEyebrow').textContent = `${M[m].label} · ทั้งประเทศ · พ.ศ. ${st.year}`;
+  $('sideHero').innerHTML = isNum(nat) ? `${fmtC(nat, m, true)}<small>${unitC(m)}</small>` : '–';
+  const dl = $('sideDelta');
+  dl.className = 'delta ' + (!isNum(d) ? 'flat' : d > 0 ? 'up' : d < 0 ? 'down' : 'flat');
+  dl.textContent = isNum(d) ? `${arrow(d)} ${fpct(Math.abs(d))} จากปี ${py}` : 'ปีแรกของข้อมูล';
+  $('spark').innerHTML = sparkSVG(YEARS.map(y => regVal('all', y, m)), 296, 44, YI[st.year]);
+  const rows = REG.map(r => ({ r, v: regVal(r.id, st.year, m) })).sort((a, b) => (b.v ?? -1) - (a.v ?? -1));
+  const mx = Math.max(1, ...rows.map(o => o.v || 0));
+  $('rankList').innerHTML = rows.map((o, i) => `<li><button type="button" data-open="${o.r.id}" data-id="${o.r.id}" style="--c:${o.r.color}">
+      <span class="no">${i + 1}</span><span class="nm"><i></i>${esc(o.r.name)}</span>
+      <span class="vv num">${fmtC(o.v, m)}</span>
+      <span class="track"><span style="width:${(100 * (o.v || 0) / mx).toFixed(1)}%"></span></span></button></li>`).join('');
+  setHeights();
+}
+function highlightRank(id) { document.querySelectorAll('#rankList button').forEach(b => b.classList.toggle('hl', b.dataset.id === id)); }
+$('rankList').addEventListener('mouseover', e => { const b = e.target.closest('[data-id]'); const r = b ? MAPR.find(o => o.id === b.dataset.id) : null; if (r !== hover) { hover = r; kick(); highlightRank(r && r.id); } });
+$('rankList').addEventListener('mouseleave', () => { hover = null; kick(); highlightRank(null); });
+$('rankList').addEventListener('click', e => { const b = e.target.closest('[data-open]'); if (b) openScope(b.dataset.open); });
+$('openAll').addEventListener('click', () => openScope('all'));
+
+/* =====================================================================
+   3) เปิด/ปิดแดชบอร์ด
+   ===================================================================== */
+function openScope(id) {
+  const first = !st.region;
+  st.region = id; st.prov = null; st.showAll = false; st.q = ''; $('q').value = '';
+  hover = null; showTip(null);
+  const show = () => { document.body.classList.add('open'); $('sheet').setAttribute('aria-hidden', 'false'); $('shBody').scrollTop = 0; renderSheet(); $('backBtn').focus({ preventScroll: true }); };
+  if (first && id !== 'all') { focusR = MAPR.find(r => r.id === id); frameRegion(focusR); kick(); }
+  first && id !== 'all' && !reduceMotion ? setTimeout(show, 450) : show();
+}
+function closeSheet() {
+  st.region = null; st.prov = null; focusR = null;
+  document.body.classList.remove('open'); $('sheet').setAttribute('aria-hidden', 'true');
+  frameHome(); kick(); renderLanding();
+}
+$('backBtn').addEventListener('click', closeSheet);
+addEventListener('keydown', e => {
+  if (e.key !== 'Escape' || !st.region) return;
+  if (st.prov) { st.prov = null; renderSheet(); } else closeSheet();
+});
+
+/* =====================================================================
+   4) แดชบอร์ด 2 มิติ
+   ===================================================================== */
+const wOf = el => Math.max(300, Math.floor(el.clientWidth || 560));
+const svg = (w, h, inner, label) => `<svg viewBox="0 0 ${w} ${h}" width="100%" height="${h}" role="img" aria-label="${esc(label)}">${inner}</svg>`;
+const ttA = (t, lines) => esc(tipH(t, lines));
+function niceMax(v) { if (!(v > 0)) return 1; const p = Math.pow(10, Math.floor(Math.log10(v))), n = v / p; return (n <= 1 ? 1 : n <= 2 ? 2 : n <= 2.5 ? 2.5 : n <= 5 ? 5 : 10) * p; }
+function niceAxis(v) { if (!(v > 0)) return { mx: 1, steps: 4 }; const raw = v / 4, p = Math.pow(10, Math.floor(Math.log10(raw))), n = raw / p; const step = (n <= 1 ? 1 : n <= 2 ? 2 : n <= 2.5 ? 2.5 : n <= 5 ? 5 : 10) * p; const steps = Math.ceil(v / step - 1e-9); return { mx: step * steps, steps }; }
+const scopeName = () => st.prov ? 'จ.' + st.prov : regById(st.region).name;
+const parentName = () => st.prov ? regById(PROV_REG[st.prov]).name : st.region === 'all' ? '' : 'ทั้งประเทศ';
+const parentVal = (y, m = st.metric) => st.prov ? (st.prov === 'กรุงเทพมหานคร' ? regVal('all', y, m) : regVal(PROV_REG[st.prov], y, m)) : st.region === 'all' ? null : regVal('all', y, m);
+const parentNameFix = () => st.prov === 'กรุงเทพมหานคร' ? 'ทั้งประเทศ' : parentName();
+const empty = (msg, btn) => `<div class="empty">${esc(msg)}${btn ? `<br><button class="btn-ghost" type="button" data-act="${btn[0]}">${esc(btn[1])}</button>` : ''}</div>`;
+const axisV = (v, m) => nf0.format(M[m].money ? v / 1e6 : v);
+
+function renderHeader() {
+  const r = regById(st.region);
+  const parts = [`<button type="button" data-act="home">แผนที่ประเทศไทย</button>`];
+  if (st.region !== 'all') parts.push(`<button type="button" data-act="all">ทั้งประเทศ</button>`);
+  parts.push(st.prov && st.region !== 'bkk' ? `<button type="button" data-act="region">${esc(r.name)}</button>` : `<span>${esc(r.name)}</span>`);
+  if (st.prov && st.region !== 'bkk') parts.push(`<span>จ.${esc(st.prov)}</span>`);
+  $('crumbs').innerHTML = parts.join('<span class="sepr">›</span>');
+  const showProv = st.prov && st.region !== 'bkk';
+  $('scopeTitle').innerHTML = esc(showProv ? 'จังหวัด' + st.prov : r.name) + (showProv ? ` <button class="chipx" type="button" data-act="region">✕ กลับไปดู${esc(r.id === 'all' ? 'ทั้งประเทศ' : 'ทั้ง' + r.label)}</button>` : '');
+  $('tabs').innerHTML = [NAT, ...REG].map(o => `<button class="tab" type="button" data-scope="${o.id}" aria-pressed="${o.id === st.region}"><i style="background:${o.color}"></i>${esc(o.tab)}</button>`).join('');
+  const all = MAPR.flatMap(o => o.poly), x0 = Math.min(...all.map(p => p[0])), x1 = Math.max(...all.map(p => p[0])), y0 = Math.min(...all.map(p => p[1])), y1 = Math.max(...all.map(p => p[1]));
+  const sc = Math.min(44 / (x1 - x0), 68 / (y1 - y0)), sel = st.prov ? PROV_REG[st.prov] : st.region;
+  $('mini').innerHTML = MAPR.map(o => `<path data-scope="${o.id}" d="M${o.poly.map(p => ((p[0] - x0) * sc + 1).toFixed(1) + ',' + ((y1 - p[1]) * sc + 1).toFixed(1)).join('L')}Z" fill="${sel === 'all' || sel === o.id ? o.color : '#dde2ea'}"><title>${esc(o.name)}</title></path>`).join('');
+}
+
+function renderKPIs() {
+  const Y = st.year, m = st.metric, v = scopeVal(Y), py = prevY();
+  const dy = py ? chg(v, scopeVal(py)) : null, d0 = Y !== Y0 ? chg(v, scopeVal(Y0)) : null;
+  const dtxt = (d, lbl) => isNum(d) ? `<b class="${d >= 0 ? 'up-t' : 'down-t'}">${arrow(d)} ${fpct(Math.abs(d))}</b> ${lbl}` : '';
+  $('k1l').textContent = `${M[m].short} · พ.ศ. ${Y}`;
+  $('k1v').innerHTML = isNum(v) ? `${fmtV(v, m, true)}<small>${unit(m)}</small>` : '–';
+  $('k1s').innerHTML = [dtxt(dy, 'จากปีก่อน'), dtxt(d0, 'จากปี ' + Y0)].filter(Boolean).join(' · ') || 'ปีแรกของข้อมูล';
+  if (st.region === 'all' && !st.prov) {
+    const top = REG.map(r => ({ r, v: regVal(r.id, Y, m) })).filter(o => isNum(o.v)).sort((a, b) => b.v - a.v)[0];
+    $('k2l').textContent = 'พื้นที่ที่มีค่าสูงสุด'; $('k2v').className = 'v txt'; $('k2v').textContent = top ? top.r.name : '–';
+    $('k2s').textContent = top && isNum(v) ? `${fmtV(top.v, m)} · ${fpct(top.v / v)} ของประเทศ` : '';
+  } else {
+    const pv = parentVal(Y);
+    $('k2l').textContent = 'สัดส่วนของ' + parentNameFix(); $('k2v').className = 'v num'; $('k2v').textContent = fpct(ratio(v, pv));
+    const ps = py ? ratio(scopeVal(py), parentVal(py)) : null, sh = ratio(v, pv);
+    $('k2s').textContent = isNum(ps) && isNum(sh) ? `ปี ${py}: ${fpct(ps)} (${(sh - ps) * 100 >= 0 ? '+' : ''}${((sh - ps) * 100).toFixed(1)} จุด)` : '';
+  }
+  const avg = ratio(scopeVal(Y, 'premium'), scopeVal(Y, 'policies')), avgP = py ? ratio(scopeVal(py, 'premium'), scopeVal(py, 'policies')) : null;
+  $('k3v').innerHTML = isNum(avg) ? `${nf0.format(avg)}<small>บาท/ราย</small>` : '–';
+  $('k3s').innerHTML = dtxt(chg(avg, avgP), 'จากปีก่อน') || '';
+  const pr = ratio(scopeVal(Y, 'payments'), scopeVal(Y, 'premium')), prP = py ? ratio(scopeVal(py, 'payments'), scopeVal(py, 'premium')) : null;
+  $('k4v').innerHTML = isNum(pr) ? `${(pr * 100).toFixed(1)}<small>%</small>` : '–';
+  $('k4s').textContent = isNum(pr) && isNum(prP) ? `ปี ${py}: ${fpct(prP)} (${(pr - prP) * 100 >= 0 ? '+' : ''}${((pr - prP) * 100).toFixed(1)} จุด)` : '';
+}
+
+/* ----- แนวโน้ม 11 ปี ----- */
+function renderTrend() {
+  const el = $('trend'), Wd = wOf(el), Ht = 300, mg = { l: 74, r: 20, t: 34, b: 34 }, ip = 18, m = st.metric;
+  const ser = YEARS.map(y => scopeVal(y));
+  let cmp = null, cmpLabel = '';
+  if (st.prov && st.prov !== 'กรุงเทพมหานคร') { const reg = PROV_REG[st.prov], n = PROVINCES[reg].length; cmp = YEARS.map(y => { const v = regVal(reg, y, m); return isNum(v) ? v / n : null; }); cmpLabel = 'ค่าเฉลี่ยต่อจังหวัดใน' + regById(reg).label; }
+  $('trTitle').textContent = `แนวโน้ม${M[m].short} พ.ศ. ${Y0}–${YL}`;
+  $('trLegend').innerHTML = `<span><i style="background:var(--accent)"></i>${esc(st.prov ? 'จ.' + st.prov : regById(st.region).label)}</span>` + (cmp ? `<span><i class="dl"></i>${esc(cmpLabel)}</span>` : '');
+  const all = ser.concat(cmp || []).filter(isNum);
+  if (!all.length) { el.innerHTML = empty('ไม่มีข้อมูลพอจะแสดงแนวโน้ม'); $('trCap').textContent = ''; return; }
+  const { mx, steps } = niceAxis(Math.max(...all) * 1.06);
+  const X = i => mg.l + ip + (Wd - mg.l - mg.r - 2 * ip) * i / (YEARS.length - 1), Yp = v => mg.t + (Ht - mg.t - mg.b) * (1 - v / mx);
+  let s = '';
+  for (let k = 0; k <= steps; k++) { const v = mx * k / steps; s += `<line x1="${mg.l}" x2="${Wd - mg.r}" y1="${Yp(v)}" y2="${Yp(v)}" stroke="#eef1f6"/><text x="${mg.l - 8}" y="${Yp(v) + 4}" text-anchor="end" font-size="12" fill="#64748b">${axisV(v, m)}</text>`; }
+  s += `<text x="${mg.l - 8}" y="14" text-anchor="end" font-size="12" fill="#64748b">${M[m].money ? 'ล้านบาท' : 'ราย'}</text>`;
+  const line = (arr, col, dash) => { let d = ''; arr.forEach((v, i) => { if (isNum(v)) d += (d && isNum(arr[i - 1]) ? 'L' : 'M') + X(i).toFixed(1) + ',' + Yp(v).toFixed(1); }); return `<path d="${d}" fill="none" stroke="${col}" stroke-width="${dash ? 1.8 : 2.6}" ${dash ? 'stroke-dasharray="5 4"' : ''} stroke-linecap="round" stroke-linejoin="round"/>`; };
+  if (ser.every(isNum)) s += `<path d="M${X(0)},${Yp(0)}${ser.map((v, i) => 'L' + X(i).toFixed(1) + ',' + Yp(v).toFixed(1)).join('')}L${X(YEARS.length - 1)},${Yp(0)}Z" fill="url(#gArea)"/>`;
+  if (cmp) s += line(cmp, '#94a3b8', true);
+  s += line(ser, 'var(--accent)');
+  const cw = (Wd - mg.l - mg.r - 2 * ip) / (YEARS.length - 1), labelAll = cw >= 58 && !M[m].money;
+  const iMax = ser.indexOf(Math.max(...ser.filter(isNum)));
+  YEARS.forEach((y, i) => {
+    const on = y === st.year, v = ser[i];
+    s += `<text x="${X(i)}" y="${Ht - 10}" text-anchor="middle" font-size="12" font-weight="${on ? 600 : 400}" fill="${on ? '#4338ca' : '#64748b'}">${y}</text>`;
+    if (on) s += `<line x1="${X(i)}" x2="${X(i)}" y1="${mg.t - 6}" y2="${Ht - mg.b}" stroke="#c7cbfb" stroke-dasharray="3 3"/>`;
+    if (isNum(v)) {
+      s += `<circle cx="${X(i)}" cy="${Yp(v)}" r="${on ? 6 : 4}" fill="${on ? 'var(--accent)' : '#fff'}" stroke="var(--accent)" stroke-width="2"/>`;
+      if (M[m].money ? on : (labelAll || on || i === 0 || i === YEARS.length - 1 || i === iMax)) s += `<text x="${X(i) + (i === YEARS.length - 1 ? 14 : i === 0 ? -14 : 0)}" y="${Yp(v) - 11}" text-anchor="${i === YEARS.length - 1 ? 'end' : i === 0 ? 'start' : 'middle'}" font-size="${on ? 12 : 10.5}" font-weight="${on ? 600 : 500}" fill="${on ? '#0f172a' : '#475569'}" paint-order="stroke" stroke="#fff" stroke-width="4">${fmtV(v, m, true)}</text>`;
+    }
+    const dPrev = i ? chg(v, ser[i - 1]) : null;
+    s += `<rect class="hit" x="${X(i) - cw / 2}" y="${mg.t - 28}" width="${cw}" height="${Ht - mg.t - mg.b + 28}" data-year="${y}" data-tt="${ttA('พ.ศ. ' + y, [fmtV(v, m), isNum(dPrev) ? `เทียบปีก่อน ${fpct(dPrev, true)}` : '', cmp && isNum(cmp[i]) ? `${cmpLabel}: ${fmtV(cmp[i], m)}` : '', 'คลิกเพื่อเลือกปีนี้'])}"/>`;
+  });
+  el.innerHTML = svg(Wd, Ht, `<defs><linearGradient id="gArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4f46e5" stop-opacity=".14"/><stop offset="1" stop-color="#4f46e5" stop-opacity="0"/></linearGradient></defs>` + s, 'กราฟเส้นแนวโน้มรายปี');
+  const f = ser.find(isNum), l = [...ser].reverse().find(isNum);
+  const cagr = isNum(f) && isNum(l) && f > 0 ? Math.pow(l / f, 1 / (YEARS.length - 1)) - 1 : null;
+  $('trCap').textContent = `แกนเริ่มที่ 0 · ทั้งช่วง ${fpct(chg(l, f), true)}` + (isNum(cagr) ? ` (เฉลี่ยปีละ ${fpct(cagr, true)})` : '') + ' · คลิกที่ปีเพื่อเปลี่ยนปีที่แสดง';
+}
+
+/* ----- อันดับจังหวัด ----- */
+function renderProvBars() {
+  const Y = st.year, m = st.metric, list = provsOf(st.region);
+  const L = list.map(p => ({ p, v: val(Y, p, m) })).sort((a, b) => (b.v ?? -1) - (a.v ?? -1));
+  const LIM = 15, many = L.length > LIM, rows = many && !st.showAll ? L.slice(0, LIM) : L;
+  const tot = L.reduce((s, o) => s + (o.v || 0), 0), vs = L.map(o => o.v).filter(isNum);
+  const brk = vs.length > 2 && vs[0] > 3 * vs[1], mx = brk ? vs[1] * 1.25 : niceMax(Math.max(0, ...vs));
+  if (st.region === 'bkk') return renderBkkShare();
+  $('pbTitle').textContent = `อันดับจังหวัด · พ.ศ. ${Y}`;
+  $('pbMore').textContent = many ? (st.showAll ? 'แสดง 15 อันดับแรก' : `แสดงทั้งหมด ${L.length} จังหวัด`) : '';
+  $('pbMore').hidden = !many;
+  $('pbCap').textContent = `${M[m].short} (${unit(m)}) · แกนเริ่มที่ 0 · คลิกจังหวัดเพื่อดูรายละเอียด` + (brk ? ` · แท่งของ${L[0].p}ถูกตัด (≈) เพราะสูงกว่าอันดับ 2 ถึง ${nf1.format(vs[0] / vs[1])} เท่า ตัวเลขเป็นค่าจริง` : '');
+  if (!L.some(o => isNum(o.v))) { $('provBars').innerHTML = empty('ไม่มีข้อมูลสำหรับตัวเลือกนี้'); return; }
+  $('provBars').className = 'hbars' + (st.prov && st.region !== 'bkk' ? ' has-on' : '');
+  $('provBars').innerHTML = rows.map((o, i) => {
+    const reg = regById(PROV_REG[o.p]);
+    return `<button class="hb${st.prov === o.p && st.region !== 'bkk' ? ' on' : ''}" type="button" data-prov="${esc(o.p)}" data-tt="${ttA('จ.' + o.p, [`${M[m].short}: ${fmtV(o.v, m)}`, tot && isNum(o.v) ? `${fpct(o.v / tot)} ของ${regById(st.region).label}` : '', reg.name])}">
+      <span class="no">${i + 1}</span><span class="nm">${st.region === 'all' ? `<i style="background:${reg.color}"></i>` : ''}${esc(o.p)}</span>
+      <span class="tr" style="position:relative"><span style="width:${isNum(o.v) ? Math.min(100, 100 * o.v / mx).toFixed(2) : 0}%"></span>${brk && i === 0 ? '<b class="brk" aria-hidden="true">≈</b>' : ''}</span>
+      <span class="vv num">${isNum(o.v) ? fmtV(o.v, m, true) : 'ไม่มีข้อมูล'}</span></button>`;
+  }).join('');
+}
+
+function renderBkkShare() {
+  const m = st.metric, rows = YEARS.map(y => ({ y, s: ratio(regVal('bkk', y, m), regVal('all', y, m)) }));
+  $('pbTitle').textContent = 'สัดส่วนของกรุงเทพฯ ต่อทั้งประเทศ รายปี'; $('pbMore').hidden = true;
+  $('pbCap').textContent = `${M[m].short} · กรุงเทพฯ มีพื้นที่เดียว จึงแสดงสัดส่วนต่อประเทศแทนอันดับจังหวัด · คลิกปีเพื่อเลือก`;
+  $('provBars').className = 'hbars has-on';
+  $('provBars').innerHTML = rows.map(o => `<button class="hb${o.y === st.year ? ' on' : ''}" type="button" data-year="${o.y}" data-tt="${ttA('พ.ศ. ' + o.y, [`กรุงเทพฯ: ${fmtV(regVal('bkk', o.y, m), m)}`, `ทั้งประเทศ: ${fmtV(regVal('all', o.y, m), m)}`, `สัดส่วน ${fpct(o.s)}`])}">
+    <span class="no"></span><span class="nm">พ.ศ. ${o.y}</span><span class="tr"><span style="width:${isNum(o.s) ? (100 * o.s).toFixed(1) : 0}%"></span></span><span class="vv num">${fpct(o.s)}</span></button>`).join('');
+}
+
+/* ----- เบี้ยรับ vs เงินจ่าย (แท่งคู่รายปี) ----- */
+function renderPP() {
+  const el = $('pp'), Wd = wOf(el), Ht = 270, mg = { l: 74, r: 12, t: 30, b: 34 };
+  const P = YEARS.map(y => scopeVal(y, 'premium')), Q = YEARS.map(y => scopeVal(y, 'payments'));
+  const all = P.concat(Q).filter(isNum);
+  if (!all.length) { el.innerHTML = empty('ไม่มีข้อมูล'); return; }
+  const { mx, steps } = niceAxis(Math.max(...all) * 1.04), n = YEARS.length;
+  const gw = (Wd - mg.l - mg.r) / n, bw = Math.min(16, gw * 0.32), Yp = v => mg.t + (Ht - mg.t - mg.b) * (1 - v / mx);
+  let s = '';
+  for (let k = 0; k <= steps; k++) { const v = mx * k / steps; s += `<line x1="${mg.l}" x2="${Wd - mg.r}" y1="${Yp(v)}" y2="${Yp(v)}" stroke="#eef1f6"/><text x="${mg.l - 8}" y="${Yp(v) + 4}" text-anchor="end" font-size="12" fill="#64748b">${axisV(v, 'premium')}</text>`; }
+  s += `<text x="${mg.l - 8}" y="14" text-anchor="end" font-size="12" fill="#64748b">ล้านบาท</text>`;
+  YEARS.forEach((y, i) => {
+    const cx = mg.l + gw * i + gw / 2, on = y === st.year, r = ratio(Q[i], P[i]), base = Yp(0);
+    if (on) s += `<rect x="${mg.l + gw * i + 2}" y="${mg.t - 22}" width="${gw - 4}" height="${Ht - mg.t - mg.b + 22}" rx="6" fill="#f1f2ff"/>`;
+    if (isNum(P[i])) s += `<rect x="${cx - bw - 1}" y="${Yp(P[i])}" width="${bw}" height="${base - Yp(P[i])}" rx="3" fill="var(--accent)" opacity="${on ? 1 : .8}"/>`;
+    if (isNum(Q[i])) s += `<rect x="${cx + 1}" y="${Yp(Q[i])}" width="${bw}" height="${base - Yp(Q[i])}" rx="3" fill="var(--pay)" opacity="${on ? 1 : .85}"/>`;
+    if (isNum(r)) s += `<text x="${cx}" y="${mg.t - 8}" text-anchor="middle" font-size="12" font-weight="${on ? 600 : 400}" fill="${on ? '#0f172a' : '#64748b'}">${Math.round(r * 100)}%</text>`;
+    s += `<text x="${cx}" y="${Ht - 10}" text-anchor="middle" font-size="12" font-weight="${on ? 600 : 400}" fill="${on ? '#4338ca' : '#64748b'}">${y}</text>`;
+    s += `<rect class="hit" x="${mg.l + gw * i}" y="${mg.t - 22}" width="${gw}" height="${Ht - mg.t - mg.b + 22}" data-year="${y}" data-tt="${ttA('พ.ศ. ' + y, [`เบี้ยประกันภัยรับ: ${fmtV(P[i], 'premium')}`, `เงินที่จ่ายตามกรมธรรม์: ${fmtV(Q[i], 'payments')}`, isNum(r) ? `เงินจ่าย ÷ เบี้ยรับ = ${fpct(r)}` : '', 'คลิกเพื่อเลือกปีนี้'])}"/>`;
+  });
+  el.innerHTML = svg(Wd, Ht, s, 'แผนภูมิแท่งคู่ เบี้ยประกันภัยรับเทียบเงินที่จ่ายตามกรมธรรม์ รายปี');
+  const rs = YEARS.map((y, i) => ({ y, r: ratio(Q[i], P[i]) })).filter(o => isNum(o.r)).sort((a, b) => b.r - a.r);
+  $('ppCap').textContent = `${scopeName()} · ตัวเลขเหนือแท่ง = เงินจ่าย ÷ เบี้ยรับ` + (rs.length ? ` · สูงสุดปี ${rs[0].y} (${fpct(rs[0].r)})` : '');
+}
+
+/* ----- เทียบทุกพื้นที่ ----- */
+function renderCompare() {
+  const Y = st.year, m = st.metric, per = st.cmp === 'per' && m !== 'policies';
+  $('cmpMode').innerHTML = segHTML([['total', 'ยอดรวม'], ['per', 'ต่อกรมธรรม์', m === 'policies']], per ? 'per' : 'total');
+  const nat = regVal('all', Y, m);
+  const get = id => per ? ratio(regVal(id, Y, m), regVal(id, Y, 'policies')) : regVal(id, Y, m);
+  const rows = REG.map(r => ({ r, v: get(r.id) })).sort((a, b) => (b.v ?? -1) - (a.v ?? -1));
+  const mx = niceMax(Math.max(0, ...rows.map(o => o.v || 0)));
+  const cur = st.prov ? PROV_REG[st.prov] : st.region, natPer = per ? get('all') : null;
+  $('cmp').className = 'hbars' + (cur !== 'all' ? ' has-on' : '');
+  $('cmp').innerHTML = rows.map((o, i) => `<button class="hb${cur === o.r.id ? ' on' : ''}" type="button" data-scope="${o.r.id}" data-tt="${ttA(o.r.name, per ? [`${M[m].short}ต่อกรมธรรม์: ${nf0.format(o.v)} บาท/ราย`, isNum(natPer) ? `ค่าเฉลี่ยประเทศ ${nf0.format(natPer)} บาท/ราย` : ''] : [fmtV(o.v, m), nat ? fpct(ratio(o.v, nat)) + ' ของทั้งประเทศ' : ''])}">
+      <span class="no">${i + 1}</span><span class="nm"><i style="background:${o.r.color}"></i>${esc(o.r.label)}</span>
+      <span class="tr"><span style="width:${isNum(o.v) ? (100 * o.v / mx).toFixed(2) : 0}%;${cur === o.r.id || cur === 'all' ? `background:${o.r.color}` : ''}"></span></span>
+      <span class="vv num">${per ? (isNum(o.v) ? nf0.format(o.v) + ' บาท' : '–') : fmtV(o.v, m, true)}</span></button>`).join('');
+  $('cmpCap').textContent = per ? `${M[m].short}เฉลี่ยต่อกรมธรรม์ 1 ราย (บาท) · พ.ศ. ${Y} · ช่วยเทียบโดยไม่ขึ้นกับขนาดพื้นที่` + (isNum(natPer) ? ` · ค่าเฉลี่ยประเทศ ${nf0.format(natPer)} บาท` : '') : `${M[m].short} (${unit(m)}) · พ.ศ. ${Y} · คลิกเพื่อสลับพื้นที่`;
+}
+
+/* ----- การเปลี่ยนแปลงรายจังหวัด ----- */
+function renderGrowth() {
+  const el = $('growth'), m = st.metric;
+  const py = prevY();
+  $('grMode').innerHTML = segHTML([['base', `เทียบปี ${Y0}`], ['yoy', 'เทียบปีก่อนหน้า', !py]], st.gr === 'yoy' && py ? 'yoy' : 'base');
+  const yoy = st.gr === 'yoy' && py, a = yoy ? py : Y0, b = yoy ? st.year : baseCmp();
+  $('grTitle').textContent = `การเปลี่ยนแปลงรายจังหวัด พ.ศ. ${a} → ${b}`;
+  let L = provsOf(st.region).map(p => ({ p, d: chg(val(b, p, m), val(a, p, m)) })).filter(o => isNum(o.d)).sort((x, y) => y.d - x.d);
+  if (!L.length) { el.innerHTML = empty('ไม่มีข้อมูลครบทั้งสองปี'); $('grCap').textContent = ''; return; }
+  let note = '';
+  if (L.length > 20) { const n = L.length; L = L.slice(0, 10).concat(L.slice(-10)); note = ` · แสดง 10 อันดับบนและล่างจาก ${n} จังหวัด`; }
+  $('grCap').textContent = `${M[m].short} · เรียงจากเพิ่มมากไปน้อย${note}`;
+  // แท่งแนวตั้ง: จังหวัดอยู่แกนนอน แท่งชี้ขึ้น (เพิ่ม) / ลง (ลด) จากเส้น 0%
+  const Wd = wOf(el) - 8, n = L.length, mg = { l: 40, r: 10, t: 26, b: 112 }, Ht = 440, gw = (Wd - mg.l - mg.r) / n, bw = Math.min(40, gw * 0.7);
+  const ds = L.map(o => o.d), lo = Math.min(0, ...ds), hi = Math.max(0, ...ds), span = (hi - lo) || 1;
+  const rot = gw < 50, ph = Ht - mg.t - mg.b, topPad = rot ? 54 : 20, botPad = lo < 0 ? (rot ? 54 : 20) : 0, sc = (ph - topPad - botPad) / span, zero = mg.t + topPad + hi * sc;
+  let s = `<line x1="${mg.l}" x2="${Wd - mg.r}" y1="${zero}" y2="${zero}" stroke="#94a3b8"/><text x="${mg.l - 6}" y="${zero + 4}" text-anchor="end" font-size="12" fill="#64748b">0%</text>`;
+  L.forEach((o, i) => {
+    const cx = mg.l + gw * i + gw / 2, bh = Math.max(2, Math.abs(o.d) * sc), by = o.d >= 0 ? zero - bh : zero, on = st.prov === o.p, up = o.d >= 0;
+    const ly = mg.t + ph + 12, vy = up ? by - 6 : by + bh + 14;
+    s += `<g data-prov="${esc(o.p)}" data-tt="${ttA('จ.' + o.p, [`${a}: ${fmtV(val(a, o.p, m), m)}`, `${b}: ${fmtV(val(b, o.p, m), m)}`, `เปลี่ยนแปลง ${fpct(o.d, true)}`])}" style="cursor:pointer" opacity="${st.prov && !on ? .45 : 1}">
+      <rect class="hit" x="${cx - gw / 2}" y="0" width="${gw}" height="${Ht}" rx="5"/>
+      <rect x="${cx - bw / 2}" y="${by}" width="${bw}" height="${bh}" rx="3" fill="${up ? 'var(--up)' : 'var(--down)'}"/>
+      <text x="${cx}" y="${vy}" text-anchor="${rot ? (up ? 'start' : 'end') : 'middle'}" font-size="12" font-weight="600" fill="#0f172a"${rot ? ` transform="rotate(-90 ${cx} ${vy})" dx="${up ? 0 : 0}"` : ''}>${fpct(o.d, true)}</text>
+      <text x="${cx + 4}" y="${ly}" text-anchor="end" font-size="12.5" font-weight="${on ? 600 : 400}" fill="${on ? '#4338ca' : '#475569'}" transform="rotate(-55 ${cx + 4} ${ly})">${esc(o.p.length > 12 ? o.p.slice(0, 11) + '…' : o.p)}</text></g>`;
+  });
+  el.innerHTML = `<div class="lg" style="justify-content:flex-start;margin:-6px 0 8px"><span><i style="background:var(--up)"></i>เพิ่มขึ้น</span><span><i style="background:var(--down)"></i>ลดลง</span></div>` + svg(Wd, Ht, s, 'แผนภูมิแท่งแนวตั้งการเปลี่ยนแปลงรายจังหวัด');
+}
+
+/* ----- สัดส่วนรายภาคตามปี (stacked 100%) ----- */
+function renderShare() {
+  const el = $('share'), m = st.metric;
+  const tot = YEARS.map(y => REG.reduce((a, r) => a + (regVal(r.id, y, m) || 0), 0));
+  const Wd = wOf(el), Ht = 300, mg = { l: 38, r: 6, t: 8, b: 26 }, gw = (Wd - mg.l - mg.r) / YEARS.length, bw = Math.min(34, gw * 0.68);
+  const order = [...REG].reverse(); // ล่างขึ้นบน: ใต้ → กทม.
+  const cur = st.prov ? PROV_REG[st.prov] : st.region;
+  let s = '';
+  [0, .25, .5, .75, 1].forEach(v => { const y = mg.t + (Ht - mg.t - mg.b) * (1 - v); s += `<line x1="${mg.l}" x2="${Wd - mg.r}" y1="${y}" y2="${y}" stroke="#eef1f6"/><text x="${mg.l - 6}" y="${y + 4}" text-anchor="end" font-size="12" fill="#64748b">${v * 100}%</text>`; });
+  YEARS.forEach((y, i) => {
+    const x = mg.l + gw * i + (gw - bw) / 2, T = tot[i], on = y === st.year; let acc = 0;
+    if (!T) return;
+    order.forEach(r => {
+      const v = regVal(r.id, y, m) || 0, f = v / T, h = (Ht - mg.t - mg.b) * f, yy = mg.t + (Ht - mg.t - mg.b) * (1 - acc - f);
+      s += `<rect x="${x.toFixed(1)}" y="${yy.toFixed(1)}" width="${bw.toFixed(1)}" height="${Math.max(0, h - 1).toFixed(1)}" fill="${r.color}" opacity="${cur !== 'all' && cur !== r.id ? .35 : 1}"/>`;
+      if (on && f > 0.07) s += `<text x="${(x + bw / 2).toFixed(1)}" y="${(yy + h / 2 + 4).toFixed(1)}" text-anchor="middle" font-size="12" font-weight="600" fill="#fff">${Math.round(f * 100)}</text>`;
+      acc += f;
+    });
+    s += `<text x="${(x + bw / 2).toFixed(1)}" y="${Ht - 8}" text-anchor="middle" font-size="12" font-weight="${on ? 600 : 400}" fill="${on ? '#4338ca' : '#64748b'}">${String(y).slice(2)}</text>`;
+    if (on) s += `<rect x="${x - 3}" y="${mg.t - 3}" width="${bw + 6}" height="${Ht - mg.t - mg.b + 6}" rx="5" fill="none" stroke="#a5b4fc" stroke-width="1.5"/>`;
+    s += `<rect class="hit" x="${mg.l + gw * i}" y="${mg.t}" width="${gw}" height="${Ht - mg.t - mg.b + 20}" data-year="${y}" data-tt="${ttA('พ.ศ. ' + y, [...REG.map(r => `${r.label}: ${fpct((regVal(r.id, y, m) || 0) / T)}`), 'คลิกเพื่อเลือกปีนี้'])}"/>`;
+  });
+  el.innerHTML = `<div class="lg" style="justify-content:flex-start;margin:0 0 8px">${REG.map(r => `<span><i style="background:${r.color}"></i>${esc(r.label)}</span>`).join('')}</div>` + svg(Wd, Ht, s, 'แผนภูมิแท่งซ้อนสัดส่วนรายภาคตามปี');
+  const f0 = regVal('bkk', Y0, m) / tot[0], fL = regVal('bkk', YEARS[YEARS.length - 1], m) / tot[tot.length - 1];
+  $('shCap').textContent = `${M[m].short} · สัดส่วนของแต่ละพื้นที่ (%) ต่อยอดรวมทั้งประเทศ · แกนปี = พ.ศ. 25xx` + (isFinite(f0) && isFinite(fL) ? ` · กรุงเทพฯ ${fpct(f0)} → ${fpct(fL)}` : '');
+}
+
+/* ----- ตาราง ----- */
+/* ----- เส้นเทียบกับค่าประเทศ (ใช้กับเบี้ยเฉลี่ย/สัดส่วนเงินจ่าย) ----- */
+function lineVs(elId, capId, legId, f, fmt, axis, pct) {
+  const el = $(elId), Wd = wOf(el), Ht = 250, mg = { l: pct ? 46 : 58, r: 16, t: 20, b: 30 }, n = YEARS.length;
+  const ser = YEARS.map(y => f(scopeVal.bind(null, y))), nat = YEARS.map(y => f((m) => regVal('all', y, m)));
+  const isNat = st.region === 'all' && !st.prov;
+  const all = ser.concat(isNat ? [] : nat).filter(isNum);
+  if (!all.length) { el.innerHTML = empty('ไม่มีข้อมูล'); $(capId).textContent = ''; return; }
+  const { mx, steps } = niceAxis(Math.max(...all) * 1.08);
+  const X = i => mg.l + 10 + (Wd - mg.l - mg.r - 20) * i / (n - 1), Yp = v => mg.t + (Ht - mg.t - mg.b) * (1 - v / mx);
+  let s = '';
+  for (let k = 0; k <= steps; k++) { const v = mx * k / steps; s += `<line x1="${mg.l}" x2="${Wd - mg.r}" y1="${Yp(v)}" y2="${Yp(v)}" stroke="#eef1f6"/><text x="${mg.l - 8}" y="${Yp(v) + 4}" text-anchor="end" font-size="12" fill="#64748b">${axis(v)}</text>`; }
+  const line = (arr, col, dash) => { let d = ''; arr.forEach((v, i) => { if (isNum(v)) d += (d && isNum(arr[i - 1]) ? 'L' : 'M') + X(i).toFixed(1) + ',' + Yp(v).toFixed(1); }); return `<path d="${d}" fill="none" stroke="${col}" stroke-width="${dash ? 1.8 : 2.6}" ${dash ? 'stroke-dasharray="5 4"' : ''} stroke-linecap="round" stroke-linejoin="round"/>`; };
+  if (!isNat) s += line(nat, '#94a3b8', true);
+  s += line(ser, 'var(--accent)');
+  const lab = st.prov ? 'จ.' + st.prov : regById(st.region).label;
+  YEARS.forEach((y, i) => {
+    const on = y === st.year, v = ser[i], cw = (Wd - mg.l - mg.r) / n;
+    s += `<text x="${X(i)}" y="${Ht - 8}" text-anchor="middle" font-size="${n > 8 && Wd < 420 ? 10 : 11.5}" font-weight="${on ? 600 : 400}" fill="${on ? '#4338ca' : '#64748b'}">${Wd < 420 ? String(y).slice(2) : y}</text>`;
+    if (on) s += `<line x1="${X(i)}" x2="${X(i)}" y1="${mg.t - 4}" y2="${Ht - mg.b}" stroke="#c7cbfb" stroke-dasharray="3 3"/>`;
+    if (isNum(v)) {
+      s += `<circle cx="${X(i)}" cy="${Yp(v)}" r="${on ? 5.5 : 3.5}" fill="${on ? 'var(--accent)' : '#fff'}" stroke="var(--accent)" stroke-width="2"/>`;
+      if (on) s += `<text x="${X(i) + (i === n - 1 ? 8 : 0)}" y="${Yp(v) - 11}" text-anchor="${i === n - 1 ? 'end' : 'middle'}" font-size="12" font-weight="600" fill="#0f172a" paint-order="stroke" stroke="#fff" stroke-width="4">${fmt(v)}</text>`;
+    }
+    s += `<rect class="hit" x="${X(i) - cw / 2}" y="${mg.t - 8}" width="${cw}" height="${Ht - mg.t - mg.b + 8}" data-year="${y}" data-tt="${ttA('พ.ศ. ' + y, [`${lab}: ${isNum(v) ? fmt(v) : '–'}`, !isNat && isNum(nat[i]) ? `ทั้งประเทศ: ${fmt(nat[i])}` : '', 'คลิกเพื่อเลือกปีนี้'])}"/>`;
+  });
+  el.innerHTML = svg(Wd, Ht, s, 'กราฟเส้นรายปี');
+  $(legId).innerHTML = `<span><i style="background:var(--accent)"></i>${esc(lab)}</span>` + (isNat ? '' : `<span><i class="dl"></i>ทั้งประเทศ</span>`);
+  const f0 = ser.find(isNum), l = [...ser].reverse().find(isNum);
+  $(capId).textContent = `ปี ${Y0} → ${YL}: ${isNum(f0) ? fmt(f0) : '–'} → ${isNum(l) ? fmt(l) : '–'} · คลิกที่ปีเพื่อเปลี่ยนปีที่แสดง`;
+}
+function renderAvg() { lineVs('avg', 'avCap', 'avLegend', g => ratio(g('premium'), g('policies')), v => nf0.format(v) + ' บาท', v => nf0.format(v), false); }
+function renderPayRatio() { lineVs('prt', 'prCap', 'prLegend', g => ratio(g('payments'), g('premium')), v => (v * 100).toFixed(1) + '%', v => Math.round(v * 100) + '%', true); }
+
+/* ----- มุมมองแดชบอร์ดรายจังหวัด: scatter + heatmap ----- */
+function renderProvDash() {
+  const m = st.metric, Y = st.year, b = baseCmp(), list = provsOf(st.region);
+  // เบี้ยเฉลี่ยต่อกรมธรรม์ รายจังหวัด เทียบค่าเฉลี่ยของพื้นที่
+  const el = $('sc');
+  const P = list.map(p => ({ p, x: ratio(val(Y, p, 'premium'), val(Y, p, 'policies')), reg: regById(PROV_REG[p]) })).filter(o => isNum(o.x)).sort((a, c) => c.x - a.x);
+  const avgScope = ratio(scopeVal(Y, 'premium'), scopeVal(Y, 'policies'));
+  if (!P.length) { el.innerHTML = empty('ไม่มีข้อมูลพอจะแสดง'); $('scCap').textContent = ''; }
+  else {
+    const mx = niceMax(Math.max(...P.map(o => o.x), avgScope || 0));
+    el.className = 'hbars scroll' + (st.prov ? ' has-on' : ''); el.style.maxHeight = '430px';
+    el.innerHTML = P.map((o, i) => `<button class="hb${st.prov === o.p ? ' on' : ''}" type="button" data-prov="${esc(o.p)}" data-tt="${ttA('จ.' + o.p, [`เบี้ยเฉลี่ย: ${nf0.format(o.x)} บาท/ราย`, isNum(avgScope) ? `${o.x >= avgScope ? 'สูงกว่า' : 'ต่ำกว่า'}ค่าเฉลี่ยพื้นที่ ${fpct(Math.abs(o.x / avgScope - 1))}` : ''])}">
+      <span class="no">${i + 1}</span><span class="nm">${st.region === 'all' ? `<i style="background:${o.reg.color}"></i>` : ''}${esc(o.p)}</span>
+      <span class="tr" style="position:relative"><span style="width:${(100 * o.x / mx).toFixed(1)}%;${isNum(avgScope) && o.x < avgScope ? '' : 'background:var(--accent)'}"></span>${isNum(avgScope) ? `<i class="avgline" style="left:${(100 * avgScope / mx).toFixed(1)}%"></i>` : ''}</span>
+      <span class="vv num">${nf0.format(o.x)}</span></button>`).join('');
+    $('scLegend').innerHTML = isNum(avgScope) ? `<span><i style="background:var(--accent)"></i>สูงกว่าค่าเฉลี่ย</span><span><i style="background:var(--bar)"></i>ต่ำกว่า</span><span><i class="avgsw"></i>เฉลี่ย ${nf0.format(avgScope)}</span>` : '';
+    $('scCap').textContent = `บาทต่อกรมธรรม์ 1 ราย · พ.ศ. ${Y} · เส้นแนวตั้ง = ค่าเฉลี่ยของ${scopeName()} · คลิกจังหวัดเพื่อเลือก`;
+  }
+  // heatmap
+  const hel = $('hm'), W2 = wOf(hel) - 8, ys2 = YEARS.slice(1), lab = Math.min(120, W2 * 0.3), cw = (W2 - lab) / ys2.length, rh = 22;
+  const rows = list.map(p => ({ p, v: val(Y, p, m) })).sort((a, c) => (c.v ?? -1) - (a.v ?? -1));
+  const col = g => { if (!isNum(g)) return '#f1f5f9'; const t = Math.min(1, Math.abs(g) / 0.4); return g >= 0 ? `rgba(47,127,209,${(0.12 + 0.8 * t).toFixed(2)})` : `rgba(232,119,46,${(0.12 + 0.8 * t).toFixed(2)})`; };
+  let h = `<div class="lg" style="justify-content:flex-start;margin:0 0 8px"><span><i style="background:var(--up)"></i>เพิ่มขึ้น</span><span><i style="background:var(--down)"></i>ลดลง</span><span style="color:#64748b">ยิ่งเข้มยิ่งเปลี่ยนมาก</span></div>`;
+  h += `<table class="hmt"><thead><tr><th style="width:${lab}px"></th>${ys2.map(y => `<th class="${y === Y ? 'cur' : ''}">${String(y).slice(2)}</th>`).join('')}</tr></thead><tbody>`;
+  rows.forEach(o => {
+    h += `<tr data-prov="${esc(o.p)}" class="${st.prov === o.p ? 'on' : ''}"><td class="nm">${esc(o.p)}</td>` + ys2.map((y, i) => {
+      const g = chg(val(y, o.p, m), val(YEARS[i], o.p, m));
+      return `<td style="background:${col(g)}" data-tt="${ttA('จ.' + o.p + ' · พ.ศ. ' + y, [`${fmtV(val(y, o.p, m), m)}`, `เทียบปี ${YEARS[i]}: ${fpct(g, true)}`])}"></td>`;
+    }).join('') + '</tr>';
+  });
+  hel.innerHTML = h + '</tbody></table>';
+  $('hmCap').textContent = `${M[m].short} · เรียงตามค่าปี ${Y} มากไปน้อย · ตัวเลขหัวคอลัมน์ = ปี พ.ศ. 25xx`;
+}
+
+function renderTable() {
+  const dash = st.tv === 'dash';
+  $('tvMode').innerHTML = segHTML([['dash', 'แดชบอร์ด'], ['table', 'ตาราง']], st.tv);
+  $('pvDash').hidden = !dash; $('tbl').hidden = dash; $('qWrap').hidden = dash;
+  if (dash) { $('tbTitle').textContent = `ข้อมูลรายจังหวัด · ${M[st.metric].label}`; $('tbCap').textContent = `หน่วย: ${unit(st.metric)} · สลับไปมุมมองตารางเพื่อค้นหา เรียง และดูตัวเลขครบทุกคอลัมน์`; renderProvDash(); return; }
+  const m = st.metric, Y = st.year, py = prevY(), tot = provsOf(st.region).reduce((s, p) => s + (val(Y, p, m) || 0), 0), q = st.q.trim();
+  let L = provsOf(st.region).map(p => {
+    const v = val(Y, p, m), vp = py ? val(py, p, m) : null, v0 = val(Y0, p, m);
+    return { p, r: PROV_REG[p], v0, vp, v, dy: chg(v, vp), d0: Y !== Y0 ? chg(v, v0) : null, sh: ratio(v, tot), avg: ratio(val(Y, p, 'premium'), val(Y, p, 'policies')) };
+  });
+  const rk = L.filter(o => isNum(o.v)).sort((a, b) => b.v - a.v); L.forEach(o => o.rank = isNum(o.v) ? rk.indexOf(o) + 1 : null);
+  if (q) L = L.filter(o => o.p.includes(q));
+  const k = st.sort.k, dir = st.sort.d;
+  L.sort((x, y) => { const A = x[k], B = y[k]; if (A == null && B == null) return 0; if (A == null) return 1; if (B == null) return -1; return (typeof A === 'string' ? A.localeCompare(B, 'th') : A - B) * dir; });
+  $('tbTitle').textContent = `ตารางข้อมูลรายจังหวัด · ${M[m].label}`;
+  $('tbCap').innerHTML = `หน่วย: ${unit(m)} · คลิกหัวตารางเพื่อเรียง · คลิกแถวเพื่อเลือกจังหวัด`;
+  if (!L.length) { $('tbl').innerHTML = empty(`ไม่พบจังหวัดที่ตรงกับ “${q}”`, ['clearq', 'ล้างคำค้นหา']); return; }
+  const cols = [['rank', 'อันดับ'], ['p', 'จังหวัด', 'l'], ...(st.region === 'all' ? [['r', 'ภาค', 'l']] : []),
+    ...(Y !== Y0 ? [['v0', 'พ.ศ. ' + Y0]] : []), ...(py && py !== Y0 ? [['vp', 'พ.ศ. ' + py]] : []), ['v', 'พ.ศ. ' + Y],
+    ...(py ? [['dy', 'เทียบปีก่อน']] : []), ...(Y !== Y0 ? [['d0', 'เทียบปี ' + Y0]] : []), ['sh', 'สัดส่วนในพื้นที่'], ['avg', 'เบี้ยเฉลี่ย/ราย (บาท)']];
+  const ar = c => st.sort.k === c ? (dir > 0 ? ' ▲' : ' ▼') : '';
+  const cell = (v) => (isNum(v) ? fmtV(v, m, true) : '–');
+  const pc = d => `<span class="${isNum(d) ? (d >= 0 ? 'up' : 'down') : ''}">${fpct(d, true)}</span>`;
+  const rowH = o => {
+    const c = { rank: o.rank ?? '–', p: esc(o.p), r: esc(regById(o.r).label), v0: cell(o.v0, o.p, Y0), vp: cell(o.vp, o.p, py), v: `<b>${cell(o.v, o.p, Y)}</b>`, dy: pc(o.dy), d0: pc(o.d0), sh: fpct(o.sh), avg: isNum(o.avg) ? nf0.format(o.avg) : '–' };
+    return `<tr data-prov="${esc(o.p)}" class="${st.prov === o.p ? 'on' : ''}">${cols.map(cc => `<td class="${cc[2] || ''}">${c[cc[0]]}</td>`).join('')}</tr>`;
+  };
+  $('tbl').innerHTML = `<table><thead><tr>${cols.map(c => `<th class="${c[2] || ''}" data-sort="${c[0]}" aria-sort="${st.sort.k === c[0] ? (dir > 0 ? 'ascending' : 'descending') : 'none'}">${c[1]}${ar(c[0])}</th>`).join('')}</tr></thead><tbody>${L.map(rowH).join('')}</tbody></table>`;
+}
+
+function renderFoot() {
+  $('foot').innerHTML = [`ที่มา: ${esc(C.SOURCE)} · ไฟล์: ${esc(C.DATA_FILE)} · ข้อมูล พ.ศ. ${Y0}–${YL}`,
+    'ตัวเลขภาค/ประเทศใช้ยอดที่เผยแพร่ ตัวเลขจังหวัดใช้ค่ารายจังหวัด · หน่วยเงินในไฟล์ต้นทางเป็นพันบาท แสดงเป็นบาทตามจริง (แกนกราฟย่อเป็นล้านบาทเพื่อให้อ่านง่าย) · เบี้ยเฉลี่ยต่อกรมธรรม์ = เบี้ยประกันภัยรับ ÷ จำนวนกรมธรรม์ที่มีผลบังคับ'].join('<br>');
+}
+
+/* ----- แผงเกี่ยวกับข้อมูล (เปิด/ปิดได้) ----- */
+const AB_TABS = [['find', 'ข้อค้นพบ'], ['qual', 'คุณภาพข้อมูล'], ['dict', 'พจนานุกรมข้อมูล']];
+function insightsHTML() {
+  const Y = st.year, m = st.metric, v = scopeVal(Y), py = prevY(), items = [];
+  if (!isNum(v)) return `<p>ไม่มีข้อมูล${M[m].short}ของ${esc(scopeName())} ในปี พ.ศ. ${Y}</p>`;
+  const dy = py ? chg(v, scopeVal(py)) : null, d0 = Y !== Y0 ? chg(v, scopeVal(Y0)) : null;
+  items.push(`พ.ศ. ${Y} ${esc(scopeName())} มี${M[m].label} <b>${fmtV(v, m)}</b>` + (isNum(dy) ? ` ${dy >= 0 ? 'เพิ่มขึ้น' : 'ลดลง'} <b>${fpct(Math.abs(dy))}</b> จากปี ${py}` : '') + (isNum(d0) ? ` และ${d0 >= 0 ? 'เพิ่มขึ้น' : 'ลดลง'} ${fpct(Math.abs(d0))} เมื่อเทียบกับปี ${Y0}` : ''));
+  const pv = parentVal(Y); if (isNum(pv)) items.push(`คิดเป็น <b>${fpct(v / pv)}</b> ของ${esc(parentNameFix())}`);
+  if (!st.prov && st.region !== 'bkk') {
+    const L = provsOf(st.region).map(p => ({ p, v: val(Y, p, m) })).filter(o => isNum(o.v)).sort((a, b) => b.v - a.v), sum = L.reduce((a, o) => a + o.v, 0);
+    if (L.length > 2) items.push(`จังหวัดสูงสุดคือ <b>${esc(L[0].p)}</b> (${fpct(L[0].v / sum)} ของพื้นที่) และ 3 อันดับแรกรวมกันคิดเป็น ${fpct(L.slice(0, 3).reduce((a, o) => a + o.v, 0) / sum)}${L[0].v / sum > 0.4 ? ' ยอดรวมจึงสะท้อนจังหวัดใหญ่เป็นหลัก' : ''}`);
+    const b = baseCmp(), g = provsOf(st.region).map(p => ({ p, d: chg(val(b, p, m), val(Y0, p, m)) })).filter(o => isNum(o.d)).sort((x, y) => y.d - x.d);
+    if (g.length > 1 && b !== Y0) { const z = g[g.length - 1]; items.push(`ช่วง พ.ศ. ${Y0}–${b} เติบโตมากที่สุดคือ <b>${esc(g[0].p)}</b> (${fpct(g[0].d, true)}) ส่วน${z.d < 0 ? 'ลดลงมากที่สุด' : 'เติบโตน้อยที่สุด'}คือ <b>${esc(z.p)}</b> (${fpct(z.d, true)})`); }
+  } else if (st.prov && st.prov !== 'กรุงเทพมหานคร') {
+    const L = PROVINCES[PROV_REG[st.prov]].map(p => val(Y, p, m)).filter(isNum);
+    items.push(`อยู่อันดับ <b>${1 + L.filter(o => o > v).length}</b> จาก ${L.length} จังหวัดใน${esc(regById(PROV_REG[st.prov]).name)}`);
+  }
+  const pr = ratio(scopeVal(Y, 'payments'), scopeVal(Y, 'premium')), pr0 = py ? ratio(scopeVal(py, 'payments'), scopeVal(py, 'premium')) : null;
+  if (isNum(pr)) items.push(`เงินที่จ่ายตามกรมธรรม์คิดเป็น <b>${fpct(pr)}</b> ของเบี้ยประกันภัยรับ${isNum(pr0) ? ` (ปี ${py}: ${fpct(pr0)})` : ''}`);
+  const n = k => regVal('all', k, 'policies'), sm = k => regVal('all', k, 'sum');
+  const notes = [
+    `จำนวนกรมธรรม์ปี 2563 สูงกว่าปีข้างเคียงมาก (ทั้งประเทศ ${fmtC(n(2563), 'policies')} ราย เทียบกับ ${fmtC(n(2562), 'policies')} ในปี 2562 และ ${fmtC(n(2564), 'policies')} ในปี 2564) ควรตรวจสอบนิยามกับแหล่งข้อมูล`,
+    `จำนวนเงินเอาประกันปี 2560 สูงกว่าปีก่อนและหลังมาก (ทั้งประเทศ ${nf0.format(sm(2560) / 1e12)} ล้านล้านบาท) ควรตรวจสอบกับแหล่งข้อมูล`
+  ];
+  return `<h4>สรุปสั้นของ ${esc(scopeName())} · พ.ศ. ${Y}</h4><p class="sub">คำนวณอัตโนมัติจากตัวกรองที่เลือกอยู่ — เปลี่ยนภาค ปี หรือตัวชี้วัด ข้อความจะเปลี่ยนตาม</p>
+    <ul class="ins">${items.map((t, i) => `<li><i>${i + 1}</i><span>${t}</span></li>`).join('')}</ul>
+    <div class="note"><b>ข้อควรรู้ก่อนตีความ</b><ul>${notes.map(t => `<li>${t}</li>`).join('')}</ul></div>`;
+}
+function qualityHTML() {
+  const S = D.stats, I = D.issues || [];
+  return `<h4>ภาพรวมการตรวจสอบ</h4>
+    <div class="qk"><div><span>ระเบียนข้อมูล (long format)</span><b>${nf0.format(S.records)}</b></div><div><span>พื้นที่ครบ 4 ตัวชี้วัด</span><b>${S.areas} / ${S.areas}</b></div><div><span>ลบแถวซ้ำ</span><b>${S.dups} แถว</b></div><div><span>ค่าติดธง IQR (เก็บไว้)</span><b class="warn">${S.iqr} ค่า</b></div></div>
+    <div class="note">ผลรวมระดับจังหวัดต่างจากยอดภาค/ประเทศที่เผยแพร่ไม่เกิน <b>${esc(S.maxTotalDiff)}</b> จึงใช้ยอดที่เผยแพร่สำหรับภาค/ประเทศ และค่ารายจังหวัดสำหรับจังหวัด</div>
+    <h4>ขั้นตอนการทำความสะอาดข้อมูล (${(D.steps || []).length} ขั้นตอน)</h4><p class="sub">จากชีต Processing_Steps — ทำซ้ำและตรวจสอบย้อนกลับได้</p>
+    <ol class="stp">${(D.steps || []).map(o => `<li><i>${o.n}</i><div><b>${esc(o.s)}</b><span>${esc(o.m)}</span><span class="m">เงื่อนไข: ${esc(o.c)}</span><span class="ok">ผลลัพธ์: ${esc(o.o)} · ตรวจสอบ: ${esc(o.v)}</span></div></li>`).join('')}</ol>
+    <h4>บันทึกปัญหาที่พบและวิธีแก้ (${I.length} รายการ)</h4>
+    ${I.map(o => `<div class="iss"><div class="t"><span>${esc(o.type)}</span><em>${nf0.format(o.n)}</em></div><div>${esc(o.fix)}</div><div class="m">${esc(o.note)}</div></div>`).join('')}
+    <p class="sub">ไฟล์ต้นทางไม่ถูกเขียนทับ · ค่าผิดปกติ (IQR) เก็บไว้ ไม่ลบอัตโนมัติ · ที่มา: ${esc(C.SOURCE)}</p>`;
+}
+function dictHTML() {
+  const K = D.dict || { fields: [], metrics: [], caution: '' };
+  return `<h4>นิยามตัวชี้วัด (4 ตัว)</h4>
+    <div class="mt">${K.metrics.map(o => `<div><code>${esc(o.c)}</code><b>${esc(o.n)}</b><span>หน่วย: ${esc(o.u)} · ${esc(o.d)}</span></div>`).join('')}</div>
+    <h4>ฟิลด์ในชุดข้อมูล (${K.fields.length} ฟิลด์)</h4><p class="sub">จากชีต Data_Dictionary ของไฟล์ ${esc(C.DATA_FILE)}</p>
+    ${K.fields.map(o => `<div class="fd"><div class="t"><code>${esc(o.f)}</code><em>${esc(o.role)}</em></div><div>${esc(o.d)}</div>
+      <dl><dt>ชนิด</dt><dd>${esc(o.t)}</dd><dt>หน่วย / ค่าที่เป็นไปได้</dt><dd>${esc(o.u)}</dd><dt>ตัวอย่าง</dt><dd>${esc(o.ex)}</dd><dt>กฎ / หมายเหตุ</dt><dd>${esc(o.rule)}</dd></dl></div>`).join('')}
+    <div class="note">${esc(K.caution)}</div>
+    <h4>ค่าที่คำนวณในแดชบอร์ด</h4>
+    <div class="fx">เบี้ยเฉลี่ย/ราย = เบี้ยประกันภัยรับ ÷ จำนวนกรมธรรม์</div>
+    <div class="fx">สัดส่วนเงินจ่าย = เงินที่จ่ายตามกรมธรรม์ ÷ เบี้ยประกันภัยรับ</div>
+    <div class="fx">การเติบโต = (ค่าปีที่เลือก − ค่าปีฐาน) ÷ ค่าปีฐาน × 100</div>
+    <div class="fx">อัตราเติบโตเฉลี่ยต่อปี = (ค่าปีสุดท้าย ÷ ค่าปีแรก)^(1/10) − 1</div>
+    <p class="sub">ค่าผิดปกติใช้เกณฑ์ 1.5×IQR แยกตามตัวชี้วัดและปี เฉพาะระดับจังหวัด</p>`;
+}
+function renderAbout() {
+  $('abTabs').innerHTML = AB_TABS.map(([k, l]) => `<button type="button" role="tab" data-ab="${k}" aria-selected="${st.ab === k}">${l}</button>`).join('');
+  $('abBody').innerHTML = st.ab === 'qual' ? qualityHTML() : st.ab === 'dict' ? dictHTML() : insightsHTML();
+}
+function setAbout(on) {
+  if (on) { const h = document.querySelector('.sh-head'); $('about').style.top = Math.max(0, Math.round(h.getBoundingClientRect().bottom)) + 'px'; }
+  st.aboutOn = on; $('about').classList.toggle('on', on); $('about').setAttribute('aria-hidden', String(!on)); $('aboutBtn').setAttribute('aria-pressed', String(on));
+  if (on) renderAbout();
+}
+
+function renderSheet() {
+  if (!st.region) return;
+  syncControls(); if (window.syncPvSel) syncPvSel();
+  renderHeader(); renderKPIs(); renderTrend(); renderProvBars(); renderPP(); renderCompare(); renderGrowth(); renderShare(); renderAvg(); renderPayRatio(); renderTable(); renderFoot(); if (st.aboutOn) renderAbout();
+}
+function renderAll() { renderLanding(); renderSheet(); }
+
+/* =====================================================================
+   5) การโต้ตอบ
+   ===================================================================== */
+['mSeg', 'mSeg2'].forEach(id => $(id).addEventListener('click', e => { const b = e.target.closest('button[data-v]'); if (b) { st.metric = b.dataset.v; renderAll(); } }));
+document.querySelectorAll('[data-ystep]').forEach(box => {
+  box.querySelector('select').addEventListener('change', e => { st.year = Number(e.target.value); renderAll(); });
+  box.addEventListener('click', e => { const b = e.target.closest('[data-step]'); if (!b) return; const i = clamp(YI[st.year] + Number(b.dataset.step), 0, YEARS.length - 1); if (YEARS[i] !== st.year) { st.year = YEARS[i]; renderAll(); } });
+});
+$('aboutBtn').addEventListener('click', e => { e.stopPropagation(); setAbout(!st.aboutOn); });
+$('aboutX').addEventListener('click', () => setAbout(false));
+$('abTabs').addEventListener('click', e => { const b = e.target.closest('[data-ab]'); if (b) { st.ab = b.dataset.ab; renderAbout(); $('abBody').scrollTop = 0; } });
+$('tvMode').addEventListener('click', e => { const b = e.target.closest('button[data-v]'); if (b) { st.tv = b.dataset.v; renderTable(); } });
+$('cmpMode').addEventListener('click', e => { const b = e.target.closest('button[data-v]'); if (b && !b.disabled) { st.cmp = b.dataset.v; renderCompare(); } });
+$('grMode').addEventListener('click', e => { const b = e.target.closest('button[data-v]'); if (b && !b.disabled) { st.gr = b.dataset.v; renderGrowth(); } });
+$('pbMore').addEventListener('click', () => { st.showAll = !st.showAll; renderProvBars(); });
+let qT; $('q').addEventListener('input', e => { clearTimeout(qT); qT = setTimeout(() => { st.q = e.target.value; renderTable(); }, 120); });
+
+$('sheet').addEventListener('click', e => {
+  if (e.target.closest('#cmpMode,#grMode,#tvMode,[data-ystep],#mSeg2')) return;
+  const act = e.target.closest('[data-act]');
+  if (act) {
+    const a = act.dataset.act;
+    if (a === 'home') closeSheet();
+    else if (a === 'all') { st.region = 'all'; st.prov = null; renderSheet(); }
+    else if (a === 'region') { st.prov = null; renderSheet(); }
+    else if (a === 'clearq') { st.q = ''; $('q').value = ''; renderTable(); }
+    return;
+  }
+  const th = e.target.closest('th[data-sort]');
+  if (th) { const k = th.dataset.sort; st.sort = { k, d: st.sort.k === k ? -st.sort.d : (k === 'p' || k === 'r' || k === 'rank' ? 1 : -1) }; renderTable(); return; }
+  const sc = e.target.closest('[data-scope]');
+  if (sc) { st.region = sc.dataset.scope; st.prov = null; st.showAll = false; renderSheet(); $('shBody').scrollTop = 0; return; }
+  const yr = e.target.closest('[data-year]');
+  if (yr) { st.year = Number(yr.dataset.year); renderAll(); return; }
+  const pv = e.target.closest('[data-prov]');
+  if (pv) {
+    const p = pv.dataset.prov;
+    if (st.region === 'bkk') return;
+    st.prov = st.prov === p ? null : p;
+    if (st.region !== 'all' && st.prov && PROV_REG[st.prov] !== st.region) st.region = PROV_REG[st.prov];
+    renderSheet();
+  }
+});
+
+/* ----- ปุ่มเลือกจังหวัด (ดูแดชบอร์ดรายจังหวัด) ----- */
+(function () {
+  const sel = $('pvSel');
+  sel.innerHTML = '<option value="">เลือกจังหวัด…</option>' + REG.filter(r => PROVINCES[r.id].length > 1 || r.id !== 'bkk').map(r => `<optgroup label="${esc(r.name)}">${[...PROVINCES[r.id]].sort((a, b) => a.localeCompare(b, 'th')).map(p => `<option value="${esc(p)}">${esc(p)}</option>`).join('')}</optgroup>`).join('');
+  sel.addEventListener('change', () => {
+    const p = sel.value;
+    if (!p) { st.prov = null; renderSheet(); return; }
+    st.prov = p; st.region = PROV_REG[p]; renderSheet();
+  });
+  window.syncPvSel = () => { sel.value = st.prov && [...sel.options].some(o => o.value === st.prov) ? st.prov : ''; };
+})();
+$('mini').addEventListener('click', e => { const p = e.target.closest('[data-scope]'); if (p) { st.region = p.dataset.scope; st.prov = null; renderSheet(); } });
+function chartTip(e) {
+  const el = e.target.closest && e.target.closest('[data-tt]');
+  if (!el) { showTip(null); return; }
+  const r = el.getBoundingClientRect();
+  showTip(el.dataset.tt, e.type === 'focusin' ? r.left + r.width / 2 : e.clientX, e.type === 'focusin' ? r.top : e.clientY);
+}
+['mousemove', 'focusin'].forEach(ev => $('sheet').addEventListener(ev, chartTip));
+['mouseleave', 'focusout'].forEach(ev => $('sheet').addEventListener(ev, () => showTip(null)));
+$('shBody').addEventListener('scroll', () => showTip(null), { passive: true });
+
+/* ส่งออก */
+function toast(msg) { const t = $('toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('on'), 2600); }
+const csvQ = v => { if (v == null) return ''; const s = String(v); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+function exportRows() {
+  const list = st.prov ? [st.prov] : provsOf(st.region);
+  const out = [['ปี พ.ศ.', 'ภาค', 'จังหวัด', 'จำนวนกรมธรรม์ (ราย)', 'จำนวนเงินเอาประกัน (พันบาท)', 'เบี้ยประกันภัยรับ (พันบาท)', 'เงินที่จ่ายตามกรมธรรม์ (พันบาท)']];
+  YEARS.forEach((y, i) => list.forEach(p => { const a = D.prov[p] && D.prov[p][i]; if (a) out.push([y, regById(PROV_REG[p]).name, p, a[MI.policies], a[MI.sum], a[MI.premium], a[MI.payments]]); }));
+  return out;
+}
+const fname = ext => `life_insurance_${st.prov || regById(st.region).tab}_${Y0}-${YL}.${ext}`;
+function saveBlob(blob, name) { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); }
+/* xlsx แบบไม่บีบอัด (zip store) — ไม่พึ่งไลบรารี */
+function makeXlsx(rows) {
+  const enc = new TextEncoder(), colN = i => String.fromCharCode(65 + i), x = t => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const sheet = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews><cols><col min="1" max="3" width="16" customWidth="1"/><col min="4" max="7" width="30" customWidth="1"/></cols><sheetData>' +
+    rows.map((r, ri) => `<row r="${ri + 1}">` + r.map((v, ci) => typeof v === 'number' ? `<c r="${colN(ci)}${ri + 1}"><v>${v}</v></c>` : `<c r="${colN(ci)}${ri + 1}" t="inlineStr"><is><t>${x(v)}</t></is></c>`).join('') + '</row>').join('') + '</sheetData></worksheet>';
+  const files = {
+    '[Content_Types].xml': '<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/></Types>',
+    '_rels/.rels': '<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>',
+    'xl/workbook.xml': '<?xml version="1.0" encoding="UTF-8"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="ข้อมูลรายจังหวัด" sheetId="1" r:id="rId1"/></sheets></workbook>',
+    'xl/_rels/workbook.xml.rels': '<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/></Relationships>',
+    'xl/worksheets/sheet1.xml': sheet
+  };
+  const T = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; T[n] = c >>> 0; }
+  const crc = u => { let c = 0xFFFFFFFF; for (let i = 0; i < u.length; i++) c = T[(c ^ u[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; };
+  const parts = [], cen = []; let off = 0;
+  const u16 = n => [n & 255, n >> 8 & 255], u32 = n => [n & 255, n >> 8 & 255, n >> 16 & 255, n >>> 24 & 255];
+  Object.entries(files).forEach(([name, txt]) => {
+    const nm = enc.encode(name), d = enc.encode(txt), c = crc(d);
+    const lh = new Uint8Array([0x50, 0x4b, 3, 4, ...u16(20), ...u16(0x800), ...u16(0), ...u16(0), ...u16(0x21), ...u32(c), ...u32(d.length), ...u32(d.length), ...u16(nm.length), ...u16(0)]);
+    parts.push(lh, nm, d);
+    cen.push(new Uint8Array([0x50, 0x4b, 1, 2, ...u16(20), ...u16(20), ...u16(0x800), ...u16(0), ...u16(0), ...u16(0x21), ...u32(c), ...u32(d.length), ...u32(d.length), ...u16(nm.length), ...u16(0), ...u16(0), ...u16(0), ...u16(0), ...u32(0), ...u32(off)]), nm);
+    off += lh.length + nm.length + d.length;
+  });
+  const cl = cen.reduce((a, b) => a + b.length, 0), n = Object.keys(files).length;
+  const end = new Uint8Array([0x50, 0x4b, 5, 6, ...u16(0), ...u16(0), ...u16(n), ...u16(n), ...u32(cl), ...u32(off), ...u16(0)]);
+  return new Blob([...parts, ...cen, end], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+}
+function doExport(kind) {
+  if (kind === 'pdf') { toast('เลือก “บันทึกเป็น PDF” ในหน้าต่างพิมพ์'); setTimeout(() => print(), 300); return; }
+  const out = exportRows();
+  if (kind === 'csv') saveBlob(new Blob(['\ufeff' + out.map(r => r.map(csvQ).join(',')).join('\r\n')], { type: 'text/csv;charset=utf-8' }), fname('csv'));
+  else saveBlob(makeXlsx(out), fname('xlsx'));
+  toast(`ส่งออก ${kind === 'csv' ? 'CSV' : 'Excel'} แล้ว ${nf0.format(out.length - 1)} แถว`);
+}
+$('expBtn').addEventListener('click', e => { e.stopPropagation(); const h = $('expMenu').hidden; $('expMenu').hidden = !h; $('expBtn').setAttribute('aria-expanded', String(h)); });
+$('expMenu').addEventListener('click', e => { const b = e.target.closest('[data-exp]'); if (b) { $('expMenu').hidden = true; $('expBtn').setAttribute('aria-expanded', 'false'); doExport(b.dataset.exp); } });
+document.addEventListener('click', e => { if (!e.target.closest('.exp')) { $('expMenu').hidden = true; $('expBtn').setAttribute('aria-expanded', 'false'); } });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { $('expMenu').hidden = true; if (st.aboutOn) setAbout(false); } });
+
+/* =====================================================================
+   6) เริ่มทำงาน
+   ===================================================================== */
+let rt; addEventListener('resize', () => { if (st.aboutOn) $('about').style.top = Math.round(document.querySelector('.sh-head').getBoundingClientRect().bottom) + 'px'; resize(); clearTimeout(rt); rt = setTimeout(renderSheet, 140); });
+try {
+  if (!D || !D.prov || !D.official) throw new Error('ไม่พบข้อมูลในบล็อก DATA');
+  $('brandT').textContent = C.TITLE; $('brandS').textContent = C.SUBTITLE; $('srcChip').textContent = C.SOURCE_SHORT + ' · พ.ศ. ' + Y0 + '–' + YL;
+  resize(); renderAll();
+  document.fonts && document.fonts.ready.then(() => kick());
+  $('boot').classList.add('done');
+} catch (err) {
+  console.error(err);
+  $('bootBox').outerHTML = `<div class="err"><h2>โหลดข้อมูลไม่สำเร็จ</h2><p>${esc(err.message)}</p><button class="btn-primary" onclick="location.reload()">ลองใหม่</button></div>`;
+}
+})();
+</script>
+<script>
+/* เข้าสู่ระบบ — บัญชีเดียว (ตรวจฝั่งเบราว์เซอร์ ไม่มีการเพิ่มผู้ใช้) */
+(() => {
+  const USER = 'admin', PASS = '1234', KEY = 'lia_auth';
+  const $ = id => document.getElementById(id), box = $('login'), f = $('lgForm');
+  const authed = () => { try { return sessionStorage.getItem(KEY) === '1'; } catch (e) { return false; } };
+  const mark = v => { try { v ? sessionStorage.setItem(KEY, '1') : sessionStorage.removeItem(KEY); } catch (e) {} };
+  function show() { box.hidden = false; document.body.style.overflow = 'hidden'; $('lgU').value = ''; $('lgP').value = ''; $('lgErr').textContent = ''; setTimeout(() => $('lgU').focus(), 50); }
+  function hide() { box.hidden = true; document.body.style.overflow = ''; }
+  const submit = () => {
+    const u = $('lgU').value.trim().toLowerCase(), p = $('lgP').value.trim(), err = $('lgErr');
+    ['lgU', 'lgP'].forEach(i => $(i).classList.remove('bad'));
+    if (!u || !p) { err.textContent = 'กรุณากรอกชื่อผู้ใช้และรหัสผ่านให้ครบ'; $(!u ? 'lgU' : 'lgP').classList.add('bad'); $(!u ? 'lgU' : 'lgP').focus(); return; }
+    if (u === USER && (p === PASS || p === '๑๒๓๔')) { mark(true); hide(); return; }
+    err.textContent = 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง กรุณาลองอีกครั้ง';
+    ['lgU', 'lgP'].forEach(i => $(i).classList.add('bad')); f.classList.remove('shake'); void f.offsetWidth; f.classList.add('shake'); $('lgP').select();
+  };
+  $('lgGo').addEventListener('click', submit);
+  [$('lgU'), $('lgP')].forEach(i => i.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); submit(); } }));
+  $('lgEye').addEventListener('click', () => { const t = $('lgP').type === 'password'; $('lgP').type = t ? 'text' : 'password'; $('lgEye').textContent = t ? 'ซ่อน' : 'แสดง'; $('lgEye').setAttribute('aria-pressed', String(t)); });
+  document.querySelectorAll('[data-logout]').forEach(b => b.addEventListener('click', () => { mark(false); show(); }));
+  if (!authed()) show();
+})();
+</script>
+</body>
+</html>
