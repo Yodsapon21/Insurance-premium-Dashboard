@@ -174,13 +174,22 @@ body.open .side,body.open .pillbar,body.open .maptools{opacity:0;pointer-events:
 .summary ul{margin:0;padding-left:18px;display:grid;gap:3px}
 .summary li::marker{color:var(--accent)}
 .kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
-.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;min-width:0}
-.kpi .k{font-size:12.5px;color:var(--ink2)}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;min-width:0;display:flex;flex-direction:column}
+.kpi .k{font-size:12.5px;color:var(--ink2);line-height:1.5}
 .kpi .v{font-size:27px;font-weight:600;line-height:1.25;margin-top:4px;letter-spacing:-.01em;overflow-wrap:anywhere}
+.kpi .v.long{font-size:21px}
 .kpi .v small{font-size:13px;font-weight:400;color:var(--muted);margin-left:4px;letter-spacing:0}
 .kpi .v.txt{font-size:19px;line-height:1.4}
-.kpi .s{font-size:12px;color:var(--muted);margin-top:4px}
+.kpi .s{font-size:12px;color:var(--muted);margin:4px 0 10px}
 .kpi .s b{font-weight:500}
+.kpi .lv{cursor:help;margin-top:auto;padding-top:9px;border-top:1px dashed var(--line);display:grid;gap:5px;font-size:12px;color:var(--ink2)}
+.kpi .lv .lvt{font-weight:600}
+.kpi .lv .lvb{position:relative;height:6px;border-radius:99px;background:linear-gradient(90deg,#fecdd3 0 33.3%,#fde68a 33.3% 66.6%,#bbf7d0 66.6% 100%)}
+.kpi .lv.neu .lvb{background:linear-gradient(90deg,#dbeafe 0 33.3%,#bfdbfe 33.3% 66.6%,#93c5fd 66.6% 100%)}
+.kpi .lv .lvb i{position:absolute;top:50%;width:12px;height:12px;border-radius:50%;background:#fff;border:3px solid #4338ca;transform:translate(-50%,-50%);box-shadow:0 1px 3px rgba(15,23,42,.25)}
+.kpi .lv .lvr{display:flex;justify-content:space-between;color:var(--muted)}
+.kpi .lv.hi .lvt{color:#15803d}.kpi .lv.mid .lvt{color:#b45309}.kpi .lv.lo .lvt{color:#be123c}.kpi .lv.neu .lvt{color:#1d4ed8}
+.kpinote{font-size:12.5px;color:var(--ink2);margin:12px 2px 0;line-height:1.75;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:12px 16px}
 .up-t{color:#1f62a8}.down-t{color:#b45309}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;min-width:0}
 .card h3{margin:0;font-size:15px;font-weight:600;display:flex;justify-content:space-between;align-items:center;gap:8px 10px;flex-wrap:wrap}
@@ -410,11 +419,12 @@ details.log ul{margin:6px 0 0;padding-left:18px;max-height:200px;overflow:auto;d
     <div class="dash">
 
       <div class="kpis s12">
-        <div class="kpi"><div class="k" id="k1l">—</div><div class="v num" id="k1v">—</div><div class="s" id="k1s"></div></div>
-        <div class="kpi"><div class="k" id="k2l">—</div><div class="v num" id="k2v">—</div><div class="s" id="k2s"></div></div>
-        <div class="kpi"><div class="k">เบี้ยประกันภัยเฉลี่ยต่อกรมธรรม์</div><div class="v num" id="k3v">—</div><div class="s" id="k3s"></div></div>
-        <div class="kpi"><div class="k">เงินที่จ่ายตามกรมธรรม์ ÷ เบี้ยประกันภัยรับ</div><div class="v num" id="k4v">—</div><div class="s" id="k4s"></div></div>
+        <div class="kpi"><div class="k" id="k1l">—</div><div class="v num" id="k1v">—</div><div class="s" id="k1s"></div><div class="lv" id="k1g" hidden></div></div>
+        <div class="kpi"><div class="k" id="k2l">—</div><div class="v num" id="k2v">—</div><div class="s" id="k2s"></div><div class="lv" id="k2g" hidden></div></div>
+        <div class="kpi"><div class="k">เบี้ยเฉลี่ยต่อกรมธรรม์ 1 ฉบับ</div><div class="v num" id="k3v">—</div><div class="s" id="k3s"></div><div class="lv" id="k3g" hidden></div></div>
+        <div class="kpi"><div class="k">เงินจ่ายคืนลูกค้า ÷ เบี้ยที่รับ</div><div class="v num" id="k4v">—</div><div class="s" id="k4s"></div><div class="lv" id="k4g" hidden></div></div>
       </div>
+      <p class="kpinote s12" id="kpiNote"></p>
 
       <section class="card s7">
         <h3><span id="trTitle">แนวโน้ม</span> <span class="lg" id="trLegend"></span></h3>
@@ -893,17 +903,35 @@ function renderHeader() {
   $('mini').innerHTML = MAPR.map(o => `<path data-scope="${o.id}" d="M${o.poly.map(p => ((p[0] - x0) * sc + 1).toFixed(1) + ',' + ((y1 - p[1]) * sc + 1).toFixed(1)).join('L')}Z" fill="${sel === 'all' || sel === o.id ? o.color : '#dde2ea'}"><title>${esc(o.name)}</title></path>`).join('');
 }
 
+
+/* ระดับของ KPI เทียบกับ 11 ปีของพื้นที่เดียวกัน (ต่ำ/ปานกลาง/สูง = ช่วงล่าง/กลาง/บน ของค่าต่ำสุด–สูงสุด) */
+function levelOf(series, cur) {
+  const vs = series.filter(isNum); if (vs.length < 3 || !isNum(cur)) return null;
+  const mn = Math.min(...vs), mx = Math.max(...vs); if (mx === mn) return null;
+  const pos = (cur - mn) / (mx - mn), rank = vs.filter(x => x > cur).length + 1;
+  return { pos, rank, n: vs.length, name: pos >= 2 / 3 ? 'สูง' : pos >= 1 / 3 ? 'ปานกลาง' : 'ต่ำ', cls: pos >= 2 / 3 ? 'hi' : pos >= 1 / 3 ? 'mid' : 'lo' };
+}
+function setLevel(id, L, neutral, what, desc) {
+  const el = $(id); if (!el) return;
+  if (!L) { el.hidden = true; el.innerHTML = ''; el.removeAttribute('data-tt'); return; }
+  el.hidden = false; el.className = 'lv ' + (neutral ? 'neu' : L.cls);
+  el.setAttribute('data-tt', tipH(what, [desc, `ถ้าเรียงตั้งแต่ปี ${Y0} ถึง ${YL} จากมากไปน้อย ปีที่เลือกอยู่อันดับ ${L.rank} จาก ${L.n} ปี`, 'จุดวงกลมยิ่งอยู่ทางขวา แปลว่าปีนี้ยิ่งสูงกว่าปีอื่น ๆ ของพื้นที่เดียวกัน', neutral ? 'ตัวเลขนี้ไม่มีถูกหรือผิด จึงใช้สีน้ำเงิน' : 'เป็นการเทียบกับปีอื่น ๆ ไม่ใช่เกณฑ์ว่าดีหรือไม่ดี']));
+  el.innerHTML = `<span class="lvt">${L.cls === 'hi' ? 'ปีนี้ค่อนข้างสูง' : L.cls === 'mid' ? 'ปีนี้อยู่ระดับกลาง' : 'ปีนี้ค่อนข้างต่ำ'}</span><span class="lvb"><i style="left:${(L.pos * 100).toFixed(1)}%"></i></span><span class="lvr"><span>ปีที่น้อยสุด</span><span>สูงอันดับ ${L.rank} จาก ${L.n} ปี</span><span>ปีที่มากสุด</span></span>`;
+}
+
 function renderKPIs() {
   const Y = st.year, m = st.metric, v = scopeVal(Y), py = prevY();
   const dy = py ? chg(v, scopeVal(py)) : null, d0 = Y !== Y0 ? chg(v, scopeVal(Y0)) : null;
   const dtxt = (d, lbl) => isNum(d) ? `<b class="${d >= 0 ? 'up-t' : 'down-t'}">${arrow(d)} ${fpct(Math.abs(d))}</b> ${lbl}` : '';
   $('k1l').textContent = `${M[m].short} · พ.ศ. ${Y}`;
   $('k1v').innerHTML = isNum(v) ? `${fmtV(v, m, true)}<small>${unit(m)}</small>` : '–';
+  $('k1v').classList.toggle('long', isNum(v) && fmtV(v, m, true).length > 12);
   $('k1s').innerHTML = [dtxt(dy, 'จากปีก่อน'), dtxt(d0, 'จากปี ' + Y0)].filter(Boolean).join(' · ') || 'ปีแรกของข้อมูล';
   if (st.region === 'all' && !st.prov) {
     const top = REG.map(r => ({ r, v: regVal(r.id, Y, m) })).filter(o => isNum(o.v)).sort((a, b) => b.v - a.v)[0];
     $('k2l').textContent = 'พื้นที่ที่มีค่าสูงสุด'; $('k2v').className = 'v txt'; $('k2v').textContent = top ? top.r.name : '–';
     $('k2s').textContent = top && isNum(v) ? `${fmtV(top.v, m)} · ${fpct(top.v / v)} ของประเทศ` : '';
+    if (top) { const rid = top.r.id; setLevel('k2g', levelOf(YEARS.map(y => ratio(regVal(rid, y, m), scopeVal(y))), top.v / v), false, 'ส่วนแบ่งของ' + top.r.name, 'พื้นที่ที่ได้ตัวเลขมากที่สุดในปีนี้ คิดเป็นกี่ % ของทั้งประเทศ'); }
   } else {
     const pv = parentVal(Y);
     $('k2l').textContent = 'สัดส่วนของ' + parentNameFix(); $('k2v').className = 'v num'; $('k2v').textContent = fpct(ratio(v, pv));
@@ -916,6 +944,13 @@ function renderKPIs() {
   const pr = ratio(scopeVal(Y, 'payments'), scopeVal(Y, 'premium')), prP = py ? ratio(scopeVal(py, 'payments'), scopeVal(py, 'premium')) : null;
   $('k4v').innerHTML = isNum(pr) ? `${(pr * 100).toFixed(1)}<small>%</small>` : '–';
   $('k4s').textContent = isNum(pr) && isNum(prP) ? `ปี ${py}: ${fpct(prP)} (${(pr - prP) * 100 >= 0 ? '+' : ''}${((pr - prP) * 100).toFixed(1)} จุด)` : '';
+
+  const par = y => ratio(scopeVal(y), parentVal(y));
+  setLevel('k1g', levelOf(YEARS.map(y => scopeVal(y)), v), false, M[m].short, 'ตัวเลขหลักของปีที่เลือก เปลี่ยนตามแท็บด้านบน (เบี้ยประกันภัย กรมธรรม์ ทุนประกัน เงินจ่าย)');
+  if (!(st.region === 'all' && !st.prov)) setLevel('k2g', levelOf(YEARS.map(par), ratio(v, parentVal(Y))), false, 'สัดส่วนของพื้นที่นี้', 'พื้นที่นี้มีตัวเลขเป็นกี่ % ของพื้นที่ที่ใหญ่กว่า (เช่น จังหวัดเทียบกับภาค)');
+  setLevel('k3g', levelOf(YEARS.map(y => ratio(scopeVal(y, 'premium'), scopeVal(y, 'policies'))), avg), false, 'เบี้ยเฉลี่ยต่อกรมธรรม์', 'ลูกค้าจ่ายเบี้ยประกันเฉลี่ยกรมธรรม์ละกี่บาทต่อปี');
+  setLevel('k4g', levelOf(YEARS.map(y => ratio(scopeVal(y, 'payments'), scopeVal(y, 'premium'))), pr), true, 'เงินจ่ายคืนลูกค้า ÷ เบี้ยที่รับ', 'บริษัทรับเบี้ยมา 100 บาท จะจ่ายเงินคืนให้ลูกค้ากี่บาท');
+  $('kpiNote').innerHTML = `<b>KPI คืออะไร</b> คือตัวเลขสำคัญ 4 ตัวที่สรุปภาพรวมของพื้นที่นี้ไว้ให้ดูได้เร็ว ๆ ตัวเลขใหญ่คือค่าจริงของปีที่เลือก ส่วนข้อความเล็กด้านล่างบอกว่าเพิ่มขึ้นหรือลดลงเท่าไรจากปีก่อน<br><b>แถบสีด้านล่างการ์ด</b> เทียบปีที่เลือกกับปีอื่น ๆ ของพื้นที่เดียวกัน (${Y0}–${YL}) จุดวงกลมอยู่ทางขวา = ปีนี้สูงกว่าปีอื่น ทางซ้าย = ต่ำกว่าปีอื่น เอาเมาส์ชี้ที่แถบเพื่ออ่านคำอธิบาย<br><b>เงินจ่ายคืน ÷ เบี้ยรับ</b> ยิ่งสูง แปลว่าบริษัทจ่ายเงินคืนให้ลูกค้ามากขึ้น ไม่มีถูกหรือผิด จึงใช้สีน้ำเงินแทนสีเขียว/แดง`;
 }
 
 /* ----- แนวโน้ม 11 ปี ----- */
